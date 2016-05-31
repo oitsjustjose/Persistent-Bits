@@ -2,7 +2,7 @@
 {
   "modid": "PersistentBits",
   "name": "Persistent Bits",
-  "description": "A simple, no-fuss chunk loader that covers a respectable area",
+  "description": "A simple, no-fuss chunk loader that keeps a 3 chunk radius loaded!",
   "version": "${version}",
   "mcversion": "${mcversion}",
   "url": "",
