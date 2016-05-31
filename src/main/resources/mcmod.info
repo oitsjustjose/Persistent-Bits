@@ -1,0 +1,16 @@
+[
+{
+  "modid": "CrissCross",
+  "name": "Criss Cross",
+  "description": "A Criss-Cross of Vanilla-Styled Machinery!",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["oitsjustjose"],
+  "credits": "/u/metrosalty on the FTB sub-reddit for textures!!!",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
