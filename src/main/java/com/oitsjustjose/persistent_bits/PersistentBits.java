@@ -9,6 +9,9 @@ import com.oitsjustjose.persistent_bits.proxy.ClientProxy;
 import com.oitsjustjose.persistent_bits.tileentity.TileChunkLoader;
 
 import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -16,6 +19,7 @@ import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.oredict.ShapedOreRecipe;
 
 @Mod(modid = Lib.MODID, name = Lib.NAME, version = Lib.VERSION)
 public class PersistentBits
@@ -33,6 +37,7 @@ public class PersistentBits
 		GameRegistry.registerBlock(chunkLoader, "chunk_loader");
 		GameRegistry.registerTileEntity(TileChunkLoader.class, Lib.MODID + ":chunk_loader");
 		ForgeChunkManager.setForcedChunkLoadingCallback(instance, new ChunkLoadingCallback());
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(chunkLoader, 1), new Object[] { " E ", "DOD", "OXO", 'E', Items.ender_pearl, 'D', "gemDiamond", 'O', Blocks.obsidian, 'X', Blocks.enchanting_table }));
 	}
 
 	@EventHandler

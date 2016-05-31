@@ -42,7 +42,6 @@ public class TileChunkLoader extends TileEntity
 			if (ticket != null)
 			{
 				forceChunkLoading(ticket);
-				PersistentBits.LOGGER.info(">>DEBUG: " + ForgeChunkManager.getPersistentChunksFor(worldObj).size());
 			}
 		}
 	}
