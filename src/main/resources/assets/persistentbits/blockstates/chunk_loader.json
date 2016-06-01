@@ -2,10 +2,10 @@
 	"forge_marker": 1,
 	"defaults": {
 		"textures": {
-			"top": "persistentbits:blocks/chunk_loader_top",
-			"side": "persistentbits:blocks/chunk_loader_sides",
-			"bottom": "persistentbits:blocks/chunk_loader_bottom",
-			"ring": "persistentbits:blocks/chunk_loader_ring"
+			"ender_pearl": "items/ender_pearl",
+			"base": "blocks/obsidian",
+			"diamond_accent": "blocks/diamond_block",
+			"particle": "blocks/obsidian"
 		},
 		"model": "persistentbits:chunk_loader",
 		"uvlock": false
