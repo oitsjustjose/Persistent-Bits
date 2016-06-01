@@ -13,7 +13,7 @@ buildscript{
 
 apply plugin: 'net.minecraftforge.gradle.forge'
 
-version = "0.1_exp"
+version = "0.2_exp"
 group= "com.oitsjustjose.persistent_bits"
 archivesBaseName = "PersistentBits-1.8.9"
 
