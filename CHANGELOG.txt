@@ -1,3 +1,5 @@
+0.4_exp:
+-Fixed: Chunk Loaders not actually working. Derp. GameRegistry stuff.
 0.3_exp:
 -Updated to 1.9.4/1.10/1.10.2
 0.2_exp:
