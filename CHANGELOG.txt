@@ -1,4 +1,6 @@
+0.3_exp:
+-Updated to 1.9.4/1.10/1.10.2
 0.2_exp:
-Changed: Model and Texture for Chunk Loader - now no longer requires any textures, uses all vanilla / resource pack based ones!
+-Changed: Model and Texture for Chunk Loader - now no longer requires any textures, uses all vanilla / resource pack based ones!
 0.1_exp:
-Initial Release: Added Chunk Loader
+-Initial Release: Added Chunk Loader

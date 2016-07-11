@@ -22,10 +22,11 @@ import com.oitsjustjose.persistent_bits.Lib;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.model.ModelBakery;
-import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.client.renderer.block.model.ModelBakery;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
@@ -33,7 +34,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ClientProxy extends CommonProxy
 {
-	static CreativeTabs tab = CreativeTabs.tabRedstone;
+	static CreativeTabs tab = CreativeTabs.REDSTONE;
 	static String MODID = Lib.MODID;
 
 	/**
@@ -65,7 +66,7 @@ public class ClientProxy extends CommonProxy
 	public static void register(Block block)
 	{
 		int meta = 0;
-		Item itemBlock = Item.getItemFromBlock(block);
+		ItemBlock itemBlock = new ItemBlock(block);
 		// Checks if the block has metadata / subtypes
 		if (itemBlock.getHasSubtypes())
 		{

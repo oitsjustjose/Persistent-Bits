@@ -8,6 +8,7 @@
 			"particle": "blocks/obsidian"
 		},
 		"model": "persistentbits:chunk_loader",
+		"transform": "forge:default-block",
 		"uvlock": false
 	},
 	"variants": {

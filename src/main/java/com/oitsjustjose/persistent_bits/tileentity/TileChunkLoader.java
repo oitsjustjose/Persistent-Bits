@@ -7,16 +7,16 @@ import com.oitsjustjose.persistent_bits.PersistentBits;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.ChunkCoordIntPair;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraftforge.common.ForgeChunkManager;
 
 public class TileChunkLoader extends TileEntity
 {
 	private ForgeChunkManager.Ticket chunkTicket;
 
-	public List<ChunkCoordIntPair> getLoadArea()
+	public List<ChunkPos> getLoadArea()
 	{
-		List<ChunkCoordIntPair> loadArea = new LinkedList();
+		List<ChunkPos> loadArea = new LinkedList<ChunkPos>();
 
 		for (int xMod = -3; xMod < 4; xMod++)
 		{
@@ -25,7 +25,7 @@ public class TileChunkLoader extends TileEntity
 				int chunkXNew = (this.getPos().getX() + (xMod * 16)) >> 4;
 				int chunkZNew = (this.getPos().getZ() + (zMod * 16)) >> 4;
 
-				loadArea.add(new ChunkCoordIntPair(chunkXNew, chunkZNew));
+				loadArea.add(new ChunkPos(chunkXNew, chunkZNew));
 			}
 		}
 
@@ -57,7 +57,7 @@ public class TileChunkLoader extends TileEntity
 	{
 		stopChunkLoading();
 		this.chunkTicket = ticket;
-		for (ChunkCoordIntPair coord : getLoadArea())
+		for (ChunkPos coord : getLoadArea())
 		{
 			ForgeChunkManager.forceChunk(this.chunkTicket, coord);
 		}
@@ -67,7 +67,7 @@ public class TileChunkLoader extends TileEntity
 	{
 		for (Object obj : this.chunkTicket.getChunkList())
 		{
-			ChunkCoordIntPair coord = (ChunkCoordIntPair) obj;
+			ChunkPos coord = (ChunkPos) obj;
 			ForgeChunkManager.unforceChunk(this.chunkTicket, coord);
 		}
 	}
@@ -85,11 +85,5 @@ public class TileChunkLoader extends TileEntity
 	public void readFromNBT(NBTTagCompound par1NBTTagCompound)
 	{
 		super.readFromNBT(par1NBTTagCompound);
-	}
-
-	@Override
-	public void writeToNBT(NBTTagCompound par1NBTTagCompound)
-	{
-		super.writeToNBT(par1NBTTagCompound);
 	}
 }

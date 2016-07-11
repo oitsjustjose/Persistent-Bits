@@ -1,34 +1,34 @@
-buildscript{
-    repositories{
+buildscript {
+    repositories {
         jcenter()
-        maven{
+        maven {
             name = "forge"
             url = "http://files.minecraftforge.net/maven"
         }
     }
-    dependencies{
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
     }
 }
-
 apply plugin: 'net.minecraftforge.gradle.forge'
 
-version = "0.2_exp"
+version = "0.3_exp"
 group= "com.oitsjustjose.persistent_bits"
-archivesBaseName = "PersistentBits-1.8.9"
+archivesBaseName = "PersistentBits-1.10.2"
 
-minecraft{
-    version = "1.8.9-11.15.1.1808"
-	if (file('../../run').exists()){
-		runDir = "../../run"
+minecraft {
+    version = "1.10.2-12.18.0.2010"
+    
+	if (file('../run').exists()){
+	runDir = "../run"
 	} else {
 		runDir = "run"
-	}   
+	}    
     useDepAts = true
     replaceIn "/Lib.java"
     replace "@VERSION@", project.version
-    
-    mappings = "stable_20"
+	
+    mappings = "snapshot_20160518"
 }
 
 dependencies {
@@ -40,16 +40,19 @@ task deobfJar(type: Jar) {
 }
 
 artifacts{
-    archives deobfJar
+	archives deobfJar
 }
 
-processResources{
+processResources
+{
+    // this will ensure that this task is redone when the versions change.
     inputs.property "version", project.version
     inputs.property "mcversion", project.minecraft.version
 
+    // replace stuff in mcmod.info, nothing else
     from(sourceSets.main.resources.srcDirs) {
-        include 'mcmod.info'               
-        expand 'version':project.version, 'mcversion':project.minecraft.version
+        include 'mcmod.info'
+		expand 'version':project.version, 'mcversion':project.minecraft.version
     }
         
     from(sourceSets.main.resources.srcDirs) {
