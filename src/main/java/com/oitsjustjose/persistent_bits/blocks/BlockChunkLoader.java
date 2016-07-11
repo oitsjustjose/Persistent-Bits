@@ -34,7 +34,7 @@ public class BlockChunkLoader extends BlockContainer
 		this.setSoundType(SoundType.STONE);
 		this.setCreativeTab(CreativeTabs.REDSTONE);
 		this.setUnlocalizedName(Lib.MODID + ".chunk_loader");
-		setRegistryName(new ResourceLocation(Lib.MODID, "chunk_loader"));
+		this.setRegistryName(new ResourceLocation(Lib.MODID, "chunk_loader"));
 		GameRegistry.register(this);
 		GameRegistry.register(new ItemBlock(this), new ResourceLocation(Lib.MODID, "chunk_loader"));
 	}
@@ -75,7 +75,7 @@ public class BlockChunkLoader extends BlockContainer
 		if (placer instanceof EntityPlayer && !world.isRemote)
 		{
 			EntityPlayer player = (EntityPlayer) placer;
-			PersistentBits.LOGGER.info("Player " + player.getName() + " has placed a Chunk Loader at coordinates: x = " + pos.getX() + ", y = " + pos.getY() + ", z = " + pos.getZ() + ".");
+			PersistentBits.LOGGER.info("Player " + player.getName() + " has placed a Chunk Loader at coordinates: x = " + pos.getX() + ", y = " + pos.getY() + ", z = " + pos.getZ() + " in Dimension " + player.dimension + ".");
 		}
 	}
 }

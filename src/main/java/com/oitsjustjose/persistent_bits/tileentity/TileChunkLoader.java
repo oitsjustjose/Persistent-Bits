@@ -28,7 +28,7 @@ public class TileChunkLoader extends TileEntity
 				loadArea.add(new ChunkPos(chunkXNew, chunkZNew));
 			}
 		}
-
+		System.out.println(loadArea);
 		return loadArea;
 	}
 
@@ -86,4 +86,10 @@ public class TileChunkLoader extends TileEntity
 	{
 		super.readFromNBT(par1NBTTagCompound);
 	}
+	
+	@Override
+    public NBTTagCompound writeToNBT(NBTTagCompound compound)
+    {
+        return super.writeToNBT(compound);
+    }
 }
