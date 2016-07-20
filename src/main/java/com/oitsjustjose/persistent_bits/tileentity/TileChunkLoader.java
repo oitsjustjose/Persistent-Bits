@@ -2,7 +2,9 @@ package com.oitsjustjose.persistent_bits.tileentity;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 
+import com.mojang.authlib.GameProfile;
 import com.oitsjustjose.persistent_bits.PersistentBits;
 
 import net.minecraft.nbt.NBTTagCompound;
@@ -13,14 +15,27 @@ import net.minecraftforge.common.ForgeChunkManager;
 public class TileChunkLoader extends TileEntity
 {
 	private ForgeChunkManager.Ticket chunkTicket;
+	private GameProfile owner;
 
+	public GameProfile getOwner()
+	{
+		return this.owner;
+	}
+	
+	public void setOwner(GameProfile profile)
+	{
+		this.owner = profile;
+	}
+	
 	public List<ChunkPos> getLoadArea()
 	{
 		List<ChunkPos> loadArea = new LinkedList<ChunkPos>();
-
-		for (int xMod = -3; xMod < 4; xMod++)
+		int radMax = PersistentBits.config.radius;
+		int radMin = 0 - radMax;
+		
+		for (int xMod = radMin; xMod < radMax; xMod++)
 		{
-			for (int zMod = -3; zMod < 4; zMod++)
+			for (int zMod = radMin; zMod < radMax; zMod++)
 			{
 				int chunkXNew = (this.getPos().getX() + (xMod * 16)) >> 4;
 				int chunkZNew = (this.getPos().getZ() + (zMod * 16)) >> 4;
@@ -28,7 +43,6 @@ public class TileChunkLoader extends TileEntity
 				loadArea.add(new ChunkPos(chunkXNew, chunkZNew));
 			}
 		}
-		System.out.println(loadArea);
 		return loadArea;
 	}
 
@@ -82,14 +96,22 @@ public class TileChunkLoader extends TileEntity
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound par1NBTTagCompound)
+	public void readFromNBT(NBTTagCompound compound)
 	{
-		super.readFromNBT(par1NBTTagCompound);
+		String owner = compound.getString("ownerName");
+		UUID id = compound.getUniqueId("uuid");
+		
+		this.owner = new GameProfile(id, owner);
+		
+		super.readFromNBT(compound);
 	}
 	
 	@Override
     public NBTTagCompound writeToNBT(NBTTagCompound compound)
     {
+		compound.setString("ownerName", this.owner.getName());
+		compound.setUniqueId("uuid", this.owner.getId());
+		
         return super.writeToNBT(compound);
     }
 }

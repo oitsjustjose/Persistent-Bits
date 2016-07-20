@@ -1,3 +1,11 @@
+0.5_exp:
+-Changed: Model for Chunk Loader (again) - brought to you by /u/fuami-cake on Reddit!
+-Changed: Internal Refactoring - does not effect end-user
+-Added: Chunk Loader security - players that do not own a chunk loader may not break it
+-Added: Chunk Loaders state their owner on Right-Click
+-Added: Config File
+-Added: Config option for chunk loading radius
+-Added: Config option for Chunk Loader security
 0.4_exp:
 -Fixed: Chunk Loaders not actually working. Derp. GameRegistry stuff.
 0.3_exp:

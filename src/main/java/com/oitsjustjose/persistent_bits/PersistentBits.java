@@ -6,7 +6,6 @@ import org.apache.logging.log4j.Logger;
 import com.oitsjustjose.persistent_bits.blocks.BlockChunkLoader;
 import com.oitsjustjose.persistent_bits.chunkloading.ChunkLoadingCallback;
 import com.oitsjustjose.persistent_bits.proxy.ClientProxy;
-import com.oitsjustjose.persistent_bits.tileentity.TileChunkLoader;
 
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
@@ -14,6 +13,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.ForgeChunkManager;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
@@ -29,13 +29,15 @@ public class PersistentBits
 	public static PersistentBits instance;
 	
 	public static Logger LOGGER = LogManager.getLogger(Lib.MODID);
+	public static Config config;
 	public static Block chunkLoader;
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event)
 	{
+		config = new Config(event.getSuggestedConfigurationFile());
+		MinecraftForge.EVENT_BUS.register(config);
 		chunkLoader = new BlockChunkLoader();
-		GameRegistry.registerTileEntity(TileChunkLoader.class, Lib.MODID + "chunk_loader");
 		ForgeChunkManager.setForcedChunkLoadingCallback(instance, new ChunkLoadingCallback());
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(chunkLoader, 1), new Object[] { " E ", "DOD", "OXO", 'E', Items.ENDER_PEARL, 'D', "gemDiamond", 'O', Blocks.OBSIDIAN, 'X', Blocks.ENCHANTING_TABLE }));
 	}
