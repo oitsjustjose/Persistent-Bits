@@ -11,12 +11,12 @@ import com.oitsjustjose.persistent_bits.proxy.ClientProxy;
 import com.oitsjustjose.persistent_bits.tileentity.TileChunkLoader;
 
 import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.WorldServer;
+import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
@@ -65,7 +65,7 @@ public class PersistentBits
 		database.deserialize();
 		for (DetailedCoordinate detCoord : database.getCoordinates())
 		{
-			ws = Minecraft.getMinecraft().getIntegratedServer().worldServerForDimension(detCoord.getDimensionID());
+			ws = DimensionManager.getWorld(detCoord.getDimensionID());
 			if (!ws.isRemote)
 			{
 				TileChunkLoader chunkLoader = (TileChunkLoader) ws.getTileEntity(detCoord.getPos());

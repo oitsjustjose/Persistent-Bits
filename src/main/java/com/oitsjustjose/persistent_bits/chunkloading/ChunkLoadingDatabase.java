@@ -10,7 +10,7 @@ import java.util.HashSet;
 
 import com.oitsjustjose.persistent_bits.PersistentBits;
 
-import net.minecraft.client.Minecraft;
+import net.minecraftforge.common.DimensionManager;
 
 /**
  * @author oitsjustjose
@@ -21,6 +21,7 @@ import net.minecraft.client.Minecraft;
 public class ChunkLoadingDatabase
 {
 	private HashSet<DetailedCoordinate> chunkLoaderCoords = new HashSet<DetailedCoordinate>();
+	File fileLocation = new File(DimensionManager.getCurrentSaveRootDirectory(), "PersistentBits.dat");
 
 	public void addChunkCoord(DetailedCoordinate newCoord)
 	{
@@ -45,7 +46,7 @@ public class ChunkLoadingDatabase
 	{
 		try
 		{
-			FileOutputStream fileOut = new FileOutputStream(getFile());
+			FileOutputStream fileOut = new FileOutputStream(fileLocation);
 			ObjectOutputStream out = new ObjectOutputStream(fileOut);
 			out.writeObject(this.chunkLoaderCoords);
 			out.close();
@@ -63,10 +64,10 @@ public class ChunkLoadingDatabase
 
 		try
 		{
-			if (getFile().exists())
+			if (fileLocation.exists())
 			{
 
-				FileInputStream fileIn = new FileInputStream(getFile());
+				FileInputStream fileIn = new FileInputStream(fileLocation);
 				ObjectInputStream in = new ObjectInputStream(fileIn);
 				this.chunkLoaderCoords = (HashSet<DetailedCoordinate>) in.readObject();
 				in.close();
@@ -85,11 +86,4 @@ public class ChunkLoadingDatabase
 		}
 	}
 
-	File getFile()
-	{
-		if (Minecraft.getMinecraft().getIntegratedServer().isDedicatedServer())
-			return new File(Minecraft.getMinecraft().getIntegratedServer().getWorldName() + File.separator + "PersistentBits.dat");
-		else
-			return new File("saves" + File.separator + Minecraft.getMinecraft().getIntegratedServer().getWorldName() + File.separator + "PersistentBits.dat");
-	}
 }
