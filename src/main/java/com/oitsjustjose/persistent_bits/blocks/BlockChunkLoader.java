@@ -5,6 +5,7 @@ import javax.annotation.Nullable;
 import com.mojang.authlib.GameProfile;
 import com.oitsjustjose.persistent_bits.Lib;
 import com.oitsjustjose.persistent_bits.PersistentBits;
+import com.oitsjustjose.persistent_bits.chunkloading.DetailedCoordinate;
 import com.oitsjustjose.persistent_bits.security.Security;
 import com.oitsjustjose.persistent_bits.tileentity.TileChunkLoader;
 
@@ -98,9 +99,19 @@ public class BlockChunkLoader extends BlockContainer
 			if (chunkTile != null)
 				chunkTile.setOwner(ownerProfile);
 
-			PersistentBits.LOGGER.info("Player " + player.getName() + " has placed a Chunk Loader at coordinates: x = " + pos.getX() + ", y = " + pos.getY() + ", z = " + pos.getZ() + " in Dimension " + player.dimension + ".");
+			PersistentBits.LOGGER.info("Player " + player.getName() + " has placed a Chunk Loader at coordinates: x = " + pos.getX() + ", y = " + pos.getY() + ", z = " + pos.getZ() + " in Dimension " + world.provider.getDimension() + ".");
+			PersistentBits.database.addChunkCoord(new DetailedCoordinate(pos, world.provider.getDimension()));
 		}
 
 		super.onBlockPlacedBy(world, pos, state, placer, stack);
+	}
+
+	@Override
+	public void breakBlock(World world, BlockPos pos, IBlockState state)
+	{
+		super.breakBlock(world, pos, state);
+		world.removeTileEntity(pos);
+		if (!world.isRemote)
+			PersistentBits.database.removeChunkCoord(new DetailedCoordinate(pos, world.provider.getDimension()));
 	}
 }
