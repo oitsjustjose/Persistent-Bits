@@ -1,4 +1,6 @@
 1.0.2:
+-Fixed: NullPointerException causing world load to hang
+1.0.1:
 -Fixed: ConcurrentModificationException causing Chunk Loaders to disappear when broken
 1.0.0:
 -I think this mod is finally at a 1.0 (non-alpha and non-beta stage)
