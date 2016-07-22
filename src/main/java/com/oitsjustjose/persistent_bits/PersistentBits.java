@@ -70,7 +70,7 @@ public class PersistentBits
 		for (DetailedCoordinate detCoord : database.getCoordinates())
 		{
 			world = DimensionManager.getWorld(detCoord.getDimensionID());
-			if (!world.isRemote)
+			if (world != null && !world.isRemote)
 			{
 				TileChunkLoader chunkLoader = (TileChunkLoader) world.getTileEntity(detCoord.getPos());
 				if (chunkLoader != null)
@@ -78,6 +78,8 @@ public class PersistentBits
 					world.loadedTileEntityList.add(chunkLoader);
 					chunkLoader.setWorldObj(world);
 					chunkLoader.validate();
+					if(config.enableNotification)
+						LOGGER.info("The Chunk Loader at " + detCoord + " has been automatically loaded!");
 				}
 			}
 		}
