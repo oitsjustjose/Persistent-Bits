@@ -13,9 +13,7 @@ import com.oitsjustjose.persistent_bits.PersistentBits;
 import net.minecraftforge.common.DimensionManager;
 
 /**
- * @author oitsjustjose
- * 
- *         A class for storing and serializing the locations of all chunk loaders on server start
+ * A class for storing and serializing the locations of all chunk loaders on server start
  */
 
 public class ChunkLoadingDatabase
@@ -32,8 +30,13 @@ public class ChunkLoadingDatabase
 	public void removeChunkCoord(DetailedCoordinate coordToRemove)
 	{
 		for (DetailedCoordinate d : this.chunkLoaderCoords)
+		{
 			if (d.equals(coordToRemove))
+			{
 				this.chunkLoaderCoords.remove(d);
+				break;
+			}
+		}
 		this.serialize();
 	}
 
@@ -54,6 +57,7 @@ public class ChunkLoadingDatabase
 		}
 		catch (IOException i)
 		{
+			PersistentBits.LOGGER.error("There was an error saving PersistentBits.dat");
 			return;
 		}
 	}
@@ -61,12 +65,10 @@ public class ChunkLoadingDatabase
 	@SuppressWarnings("unchecked")
 	public void deserialize()
 	{
-
 		try
 		{
 			if (fileLocation.exists())
 			{
-
 				FileInputStream fileIn = new FileInputStream(fileLocation);
 				ObjectInputStream in = new ObjectInputStream(fileIn);
 				this.chunkLoaderCoords = (HashSet<DetailedCoordinate>) in.readObject();
@@ -76,14 +78,14 @@ public class ChunkLoadingDatabase
 		}
 		catch (IOException i)
 		{
-			PersistentBits.LOGGER.info("DERP IOEx");
+			PersistentBits.LOGGER.error("There was an error loading PersistentBits.dat");
 			return;
 		}
 		catch (ClassNotFoundException c)
 		{
-			PersistentBits.LOGGER.info("DERP ClassNotFoundEx");
+			PersistentBits.LOGGER.error("There was an error in the code for deserialization. Please contact oitsjustjose on GitHub with a log");
+			PersistentBits.LOGGER.error(c.getMessage());
 			return;
 		}
 	}
-
 }

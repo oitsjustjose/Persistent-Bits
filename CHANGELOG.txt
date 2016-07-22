@@ -1,3 +1,5 @@
+1.0.2:
+-Fixed: ConcurrentModificationException causing Chunk Loaders to disappear when broken
 1.0.0:
 -I think this mod is finally at a 1.0 (non-alpha and non-beta stage)
 -Added: Chunk Loaders now automatically load themselves on world load. You will need to re-place chunk loaders that have already been placed before this will work.

@@ -1,5 +1,7 @@
 package com.oitsjustjose.persistent_bits.blocks;
 
+import java.util.ConcurrentModificationException;
+
 import javax.annotation.Nullable;
 
 import com.mojang.authlib.GameProfile;
@@ -98,8 +100,8 @@ public class BlockChunkLoader extends BlockContainer
 			TileChunkLoader chunkTile = (TileChunkLoader) world.getTileEntity(pos);
 			if (chunkTile != null)
 				chunkTile.setOwner(ownerProfile);
-
-			PersistentBits.LOGGER.info("Player " + player.getName() + " has placed a Chunk Loader at coordinates: x = " + pos.getX() + ", y = " + pos.getY() + ", z = " + pos.getZ() + " in Dimension " + world.provider.getDimension() + ".");
+			if (PersistentBits.config.enableNotification)
+				PersistentBits.LOGGER.info("Player " + player.getName() + " has placed a Chunk Loader at coordinates: x = " + pos.getX() + ", y = " + pos.getY() + ", z = " + pos.getZ() + " in Dimension " + world.provider.getDimension() + ".");
 			PersistentBits.database.addChunkCoord(new DetailedCoordinate(pos, world.provider.getDimension()));
 		}
 
@@ -109,9 +111,22 @@ public class BlockChunkLoader extends BlockContainer
 	@Override
 	public void breakBlock(World world, BlockPos pos, IBlockState state)
 	{
-		super.breakBlock(world, pos, state);
-		world.removeTileEntity(pos);
 		if (!world.isRemote)
-			PersistentBits.database.removeChunkCoord(new DetailedCoordinate(pos, world.provider.getDimension()));
+		{
+			if (PersistentBits.config.enableNotification)
+				PersistentBits.LOGGER.info("Chunk Loader at coordinates: x = " + pos.getX() + ", y = " + pos.getY() + ", z = " + pos.getZ() + " in Dimension " + world.provider.getDimension() + " has been destroyed.");
+			// In a try/catch to avoid the block from just disappearing if it for some reason can't re-serialize the .dat
+			try
+			{
+				PersistentBits.database.removeChunkCoord(new DetailedCoordinate(pos, world.provider.getDimension()));
+			}
+			catch (ConcurrentModificationException e)
+			{
+				PersistentBits.LOGGER.info("Concurrent Modification Exception caught!");
+				super.breakBlock(world, pos, state);
+			}
+		}
+
+		super.breakBlock(world, pos, state);
 	}
 }

@@ -4,13 +4,12 @@ import java.io.File;
 
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
-import net.minecraftforge.fml.client.event.ConfigChangedEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class Config
 {
 	public Configuration config;
 	public boolean enableSecurity;
+	public boolean enableNotification;
 	public int radius;
 
 	public Config(File configFile)
@@ -32,6 +31,10 @@ public class Config
 		Property property = config.get(Configuration.CATEGORY_GENERAL, "Enable Chunk Loader Security", false);
 		property.setComment("Enabling this means player that don't own a chunk loader can't break it");
 		enableSecurity = property.getBoolean();
+		
+		property = config.get(Configuration.CATEGORY_GENERAL, "Enable Console Notification of Placement / Destruction", true);
+		property.setComment("Helpful for servers to see when someone has placed a Chunk Loader, and where");
+		enableNotification = property.getBoolean();
 
 		property = config.get(Configuration.CATEGORY_GENERAL, "Chunk Loading Radius", 3);
 		property.setComment("The radius of chunks covered by the loader");
@@ -39,12 +42,5 @@ public class Config
 
 		if (config.hasChanged())
 			config.save();
-	}
-
-	@SubscribeEvent
-	public void update(ConfigChangedEvent.OnConfigChangedEvent event)
-	{
-		if (event.getModID().equals(Lib.MODID))
-			loadConfiguration();
 	}
 }

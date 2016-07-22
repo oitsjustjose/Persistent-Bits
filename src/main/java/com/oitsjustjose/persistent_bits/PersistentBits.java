@@ -8,6 +8,7 @@ import com.oitsjustjose.persistent_bits.chunkloading.ChunkLoadingCallback;
 import com.oitsjustjose.persistent_bits.chunkloading.ChunkLoadingDatabase;
 import com.oitsjustjose.persistent_bits.chunkloading.DetailedCoordinate;
 import com.oitsjustjose.persistent_bits.proxy.ClientProxy;
+import com.oitsjustjose.persistent_bits.proxy.CommonProxy;
 import com.oitsjustjose.persistent_bits.tileentity.TileChunkLoader;
 
 import net.minecraft.block.Block;
@@ -18,10 +19,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.ForgeChunkManager;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
+import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
@@ -34,6 +35,9 @@ public class PersistentBits
 	@Instance(Lib.MODID)
 	public static PersistentBits instance;
 
+	@SidedProxy(clientSide = Lib.CLIENT_PROXY, serverSide = Lib.COMMON_PROXY, modId = Lib.MODID)
+	public static CommonProxy proxy;
+
 	public static Logger LOGGER = LogManager.getLogger(Lib.MODID);
 	public static Config config;
 	public static Block chunkLoader;
@@ -43,7 +47,6 @@ public class PersistentBits
 	public void preInit(FMLPreInitializationEvent event)
 	{
 		config = new Config(event.getSuggestedConfigurationFile());
-		MinecraftForge.EVENT_BUS.register(config);
 		chunkLoader = new BlockChunkLoader();
 		ForgeChunkManager.setForcedChunkLoadingCallback(instance, new ChunkLoadingCallback());
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(chunkLoader, 1), new Object[] { " E ", "DOD", "OXO", 'E', Items.ENDER_PEARL, 'D', "gemDiamond", 'O', Blocks.OBSIDIAN, 'X', Blocks.ENCHANTING_TABLE }));
@@ -59,20 +62,21 @@ public class PersistentBits
 	@EventHandler
 	public void serverStarted(FMLServerStartedEvent event)
 	{
+		// Handles re-loading Chunk Loaders on world load
 		database = new ChunkLoadingDatabase();
 
-		WorldServer ws;
+		WorldServer world;
 		database.deserialize();
 		for (DetailedCoordinate detCoord : database.getCoordinates())
 		{
-			ws = DimensionManager.getWorld(detCoord.getDimensionID());
-			if (!ws.isRemote)
+			world = DimensionManager.getWorld(detCoord.getDimensionID());
+			if (!world.isRemote)
 			{
-				TileChunkLoader chunkLoader = (TileChunkLoader) ws.getTileEntity(detCoord.getPos());
+				TileChunkLoader chunkLoader = (TileChunkLoader) world.getTileEntity(detCoord.getPos());
 				if (chunkLoader != null)
 				{
-					ws.loadedTileEntityList.add(chunkLoader);
-					chunkLoader.setWorldObj(ws);
+					world.loadedTileEntityList.add(chunkLoader);
+					chunkLoader.setWorldObj(world);
 					chunkLoader.validate();
 				}
 			}

@@ -4,6 +4,10 @@ import java.io.Serializable;
 
 import net.minecraft.util.math.BlockPos;
 
+/**
+ * A simple object which stores X, Y and Z coordinates, as well as the dimension - this is used to easily serialize the locations
+ */
+
 public class DetailedCoordinate implements Serializable
 {
 	private static final long serialVersionUID = -2309676475992160338L;
@@ -44,19 +48,12 @@ public class DetailedCoordinate implements Serializable
 		{
 			DetailedCoordinate detOther = (DetailedCoordinate) other;
 			if (detOther.getDimensionID() == this.getDimensionID())
-			{
 				if (detOther.getPos().getX() == this.x)
-				{
 					if (detOther.getPos().getY() == this.y)
-					{
 						if (detOther.getPos().getZ() == this.z)
-						{
 							return true;
-						}
-					}
-				}
-			}
 		}
+
 		return false;
 	}
 
