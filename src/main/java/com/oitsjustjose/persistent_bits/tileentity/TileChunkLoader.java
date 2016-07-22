@@ -32,13 +32,24 @@ public class TileChunkLoader extends TileEntity
 		List<ChunkPos> loadArea = new LinkedList<ChunkPos>();
 		int radMax = PersistentBits.config.radius;
 		int radMin = 0 - radMax;
+
+		// pull chunk coord transform out of the loop
+		int cx = this.getPos().getX() >> 4;
+		int cz = this.getPos().getZ() >> 4;
 		
-		for (int xMod = radMin; xMod < radMax; xMod++)
+		// previous loop went from -R to (R-1), so one chunk further in
+		// both negative directions.  this change goes from -R to R instead.
+		//
+		// or you can do "xMod = radMin + 1; xMod < radMax" if -(R-1) to (R-1)
+		// was the intention... depends on whether you want to define
+		// radius to include the center chunk
+		for (int xMod = radMin; xMod <= radMax; xMod++)
 		{
-			for (int zMod = radMin; zMod < radMax; zMod++)
+			for (int zMod = radMin; zMod <= radMax; zMod++)
 			{
-				int chunkXNew = (this.getPos().getX() + (xMod * 16)) >> 4;
-				int chunkZNew = (this.getPos().getZ() + (zMod * 16)) >> 4;
+				// simplified offset math
+				int chunkXNew = cx + xMod;
+				int chunkZNew = cz + zMod;
 
 				loadArea.add(new ChunkPos(chunkXNew, chunkZNew));
 			}
