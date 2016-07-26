@@ -21,7 +21,7 @@ public class Security
 		{
 			TileChunkLoader tileChunkLoader = (TileChunkLoader) world.getTileEntity(event.getPos());
 
-			if (tileChunkLoader != null && tileChunkLoader.getOwner() != null)
+			if (tileChunkLoader.getOwner() != null)
 			{
 				GameProfile owner = tileChunkLoader.getOwner();
 				if (!(owner.getId().equals(harvester.getId())))
