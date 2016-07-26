@@ -3,6 +3,7 @@ package com.oitsjustjose.persistent_bits.security;
 import com.mojang.authlib.GameProfile;
 import com.oitsjustjose.persistent_bits.tileentity.TileChunkLoader;
 
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -14,14 +15,19 @@ public class Security
 	{
 		World world = event.getEntity().getEntityWorld();
 		GameProfile harvester = new GameProfile(event.getEntityPlayer().getUniqueID(), event.getEntityPlayer().getName());
-		TileChunkLoader tile = (TileChunkLoader) world.getTileEntity(event.getPos());
+		TileEntity tile = world.getTileEntity(event.getPos());
 
-		if (tile != null && tile.getOwner() != null)
+		if (tile != null && tile instanceof TileChunkLoader)
 		{
-			GameProfile owner = tile.getOwner();
-			if (!(owner.getId().equals(harvester.getId())))
+			TileChunkLoader tileChunkLoader = (TileChunkLoader) world.getTileEntity(event.getPos());
+
+			if (tileChunkLoader != null && tileChunkLoader.getOwner() != null)
 			{
-				event.setNewSpeed(0);
+				GameProfile owner = tileChunkLoader.getOwner();
+				if (!(owner.getId().equals(harvester.getId())))
+				{
+					event.setNewSpeed(0);
+				}
 			}
 		}
 	}
