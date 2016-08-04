@@ -56,7 +56,9 @@ public class PersistentBits
 	public void postInit(FMLInitializationEvent event)
 	{
 		if (event.getSide().isClient())
+		{
 			ClientProxy.register(Item.getItemFromBlock(chunkLoader));
+		}
 	}
 
 	@EventHandler
@@ -78,7 +80,7 @@ public class PersistentBits
 					world.loadedTileEntityList.add(chunkLoader);
 					chunkLoader.setWorldObj(world);
 					chunkLoader.validate();
-					if(config.enableNotification)
+					if (config.enableNotification)
 						LOGGER.info("The Chunk Loader at " + detCoord + " has been automatically loaded!");
 				}
 			}

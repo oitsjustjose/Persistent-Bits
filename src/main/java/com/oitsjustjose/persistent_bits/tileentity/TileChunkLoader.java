@@ -16,7 +16,23 @@ public class TileChunkLoader extends TileEntity
 {
 	private ForgeChunkManager.Ticket chunkTicket;
 	private GameProfile owner;
-
+	private boolean showingChunks;
+	
+	public boolean isShowingChunks()
+	{
+		return this.showingChunks;
+	}
+	
+	public void setChunksShown()
+	{
+		this.showingChunks = true;
+	}
+	
+	public void setChunksHidden()
+	{
+		this.showingChunks = false;
+	}
+	
 	public GameProfile getOwner()
 	{
 		return this.owner;

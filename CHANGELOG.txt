@@ -1,3 +1,7 @@
+1.0.4:
+-Added: Right Click now shows chunks that are loaded (this is client-side only)
+1.0.3:
+-Fixed: ClassCastException causing the internal server to stop responding
 1.0.2:
 -Fixed: NullPointerException causing world load to hang
 1.0.1:

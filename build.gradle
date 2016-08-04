@@ -12,7 +12,7 @@ buildscript {
 }
 apply plugin: 'net.minecraftforge.gradle.forge'
 
-version = "1.0.2"
+version = "1.0.4"
 group= "com.oitsjustjose.persistent_bits"
 archivesBaseName = "PersistentBits-1.10.2"
 
@@ -29,9 +29,6 @@ minecraft {
     replace "@VERSION@", project.version
 	
     mappings = "snapshot_20160518"
-}
-
-dependencies {
 }
 
 task deobfJar(type: Jar) {
