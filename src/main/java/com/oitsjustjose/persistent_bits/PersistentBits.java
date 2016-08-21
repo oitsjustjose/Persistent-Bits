@@ -3,10 +3,10 @@ package com.oitsjustjose.persistent_bits;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.oitsjustjose.persistent_bits.blocks.BlockChunkLoader;
+import com.oitsjustjose.persistent_bits.block.BlockChunkLoader;
+import com.oitsjustjose.persistent_bits.chunkloading.DimCoordinate;
 import com.oitsjustjose.persistent_bits.chunkloading.ChunkLoadingCallback;
 import com.oitsjustjose.persistent_bits.chunkloading.ChunkLoadingDatabase;
-import com.oitsjustjose.persistent_bits.chunkloading.DetailedCoordinate;
 import com.oitsjustjose.persistent_bits.proxy.ClientProxy;
 import com.oitsjustjose.persistent_bits.proxy.CommonProxy;
 import com.oitsjustjose.persistent_bits.tileentity.TileChunkLoader;
@@ -29,7 +29,7 @@ import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
-@Mod(modid = Lib.MODID, name = Lib.NAME, version = Lib.VERSION, acceptedMinecraftVersions = "1.9.4")
+@Mod(modid = Lib.MODID, name = Lib.NAME, version = Lib.VERSION, acceptedMinecraftVersions = "1.9.4", dependencies = "after:rftoolsdim")
 public class PersistentBits
 {
 	@Instance(Lib.MODID)
@@ -69,19 +69,19 @@ public class PersistentBits
 
 		WorldServer world;
 		database.deserialize();
-		for (DetailedCoordinate detCoord : database.getCoordinates())
+		for (DimCoordinate coord : database.getCoordinates())
 		{
-			world = DimensionManager.getWorld(detCoord.getDimensionID());
+			world = DimensionManager.getWorld(coord.getDimensionID());
 			if (world != null && !world.isRemote)
 			{
-				TileChunkLoader chunkLoader = (TileChunkLoader) world.getTileEntity(detCoord.getPos());
+				TileChunkLoader chunkLoader = (TileChunkLoader) world.getTileEntity(coord.getPos());
 				if (chunkLoader != null)
 				{
 					world.loadedTileEntityList.add(chunkLoader);
 					chunkLoader.setWorldObj(world);
 					chunkLoader.validate();
 					if (config.enableNotification)
-						LOGGER.info("The Chunk Loader at " + detCoord + " has been automatically loaded!");
+						LOGGER.info("The Chunk Loader at " + coord + " has been automatically loaded!");
 				}
 			}
 		}

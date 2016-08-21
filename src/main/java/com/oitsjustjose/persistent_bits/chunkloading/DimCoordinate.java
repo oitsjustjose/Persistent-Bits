@@ -8,12 +8,12 @@ import net.minecraft.util.math.BlockPos;
  * A simple object which stores X, Y and Z coordinates, as well as the dimension - this is used to easily serialize the locations
  */
 
-public class DetailedCoordinate implements Serializable
+public class DimCoordinate implements Serializable
 {
 	private static final long serialVersionUID = -2309676475992160338L;
 	private int x, y, z, dimension;
 
-	public DetailedCoordinate(BlockPos pos, int dim)
+	public DimCoordinate(BlockPos pos, int dim)
 	{
 		this.x = pos.getX();
 		this.y = pos.getY();
@@ -21,7 +21,7 @@ public class DetailedCoordinate implements Serializable
 		this.dimension = dim;
 	}
 
-	public DetailedCoordinate(int x, int y, int z, int dim)
+	public DimCoordinate(int x, int y, int z, int dim)
 	{
 		this.x = x;
 		this.y = y;
@@ -44,9 +44,9 @@ public class DetailedCoordinate implements Serializable
 	{
 		if (other == this)
 			return true;
-		if (other instanceof DetailedCoordinate)
+		if (other instanceof DimCoordinate)
 		{
-			DetailedCoordinate detOther = (DetailedCoordinate) other;
+			DimCoordinate detOther = (DimCoordinate) other;
 			if (detOther.getDimensionID() == this.getDimensionID())
 				if (detOther.getPos().getX() == this.x)
 					if (detOther.getPos().getY() == this.y)

@@ -18,18 +18,18 @@ import net.minecraftforge.common.DimensionManager;
 
 public class ChunkLoadingDatabase
 {
-	private HashSet<DetailedCoordinate> chunkLoaderCoords = new HashSet<DetailedCoordinate>();
+	private HashSet<DimCoordinate> chunkLoaderCoords = new HashSet<DimCoordinate>();
 	File fileLocation = new File(DimensionManager.getCurrentSaveRootDirectory(), "PersistentBits.dat");
 
-	public void addChunkCoord(DetailedCoordinate newCoord)
+	public void addChunkCoord(DimCoordinate newCoord)
 	{
 		this.chunkLoaderCoords.add(newCoord);
 		this.serialize();
 	}
 
-	public void removeChunkCoord(DetailedCoordinate coordToRemove)
+	public void removeChunkCoord(DimCoordinate coordToRemove)
 	{
-		for (DetailedCoordinate d : this.chunkLoaderCoords)
+		for (DimCoordinate d : this.chunkLoaderCoords)
 		{
 			if (d.equals(coordToRemove))
 			{
@@ -40,7 +40,7 @@ public class ChunkLoadingDatabase
 		this.serialize();
 	}
 
-	public HashSet<DetailedCoordinate> getCoordinates()
+	public HashSet<DimCoordinate> getCoordinates()
 	{
 		return this.chunkLoaderCoords;
 	}
@@ -71,7 +71,7 @@ public class ChunkLoadingDatabase
 			{
 				FileInputStream fileIn = new FileInputStream(fileLocation);
 				ObjectInputStream in = new ObjectInputStream(fileIn);
-				this.chunkLoaderCoords = (HashSet<DetailedCoordinate>) in.readObject();
+				this.chunkLoaderCoords = (HashSet<DimCoordinate>) in.readObject();
 				in.close();
 				fileIn.close();
 			}

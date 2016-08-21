@@ -1,4 +1,4 @@
-package com.oitsjustjose.persistent_bits.blocks;
+package com.oitsjustjose.persistent_bits.block;
 
 import java.util.ConcurrentModificationException;
 import java.util.LinkedList;
@@ -9,7 +9,7 @@ import javax.annotation.Nullable;
 import com.mojang.authlib.GameProfile;
 import com.oitsjustjose.persistent_bits.Lib;
 import com.oitsjustjose.persistent_bits.PersistentBits;
-import com.oitsjustjose.persistent_bits.chunkloading.DetailedCoordinate;
+import com.oitsjustjose.persistent_bits.chunkloading.DimCoordinate;
 import com.oitsjustjose.persistent_bits.security.Security;
 import com.oitsjustjose.persistent_bits.tileentity.TileChunkLoader;
 
@@ -116,7 +116,7 @@ public class BlockChunkLoader extends BlockContainer
 				chunkTile.setOwner(ownerProfile);
 			if (PersistentBits.config.enableNotification)
 				PersistentBits.LOGGER.info("Player " + player.getName() + " has placed a Chunk Loader at coordinates: x = " + pos.getX() + ", y = " + pos.getY() + ", z = " + pos.getZ() + " in Dimension " + world.provider.getDimension() + ".");
-			PersistentBits.database.addChunkCoord(new DetailedCoordinate(pos, world.provider.getDimension()));
+			PersistentBits.database.addChunkCoord(new DimCoordinate(pos, world.provider.getDimension()));
 		}
 
 		super.onBlockPlacedBy(world, pos, state, placer, stack);
@@ -132,7 +132,7 @@ public class BlockChunkLoader extends BlockContainer
 			// In a try/catch to avoid the block from just disappearing if it for some reason can't re-serialize the .dat
 			try
 			{
-				PersistentBits.database.removeChunkCoord(new DetailedCoordinate(pos, world.provider.getDimension()));
+				PersistentBits.database.removeChunkCoord(new DimCoordinate(pos, world.provider.getDimension()));
 			}
 			catch (ConcurrentModificationException e)
 			{
