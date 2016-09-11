@@ -33,7 +33,7 @@ import net.minecraftforge.oredict.ShapedOreRecipe;
 public class PersistentBits
 {
 	@Instance(Lib.MODID)
-	public static PersistentBits instance;
+	public static PersistentBits INSTANCE;
 
 	@SidedProxy(clientSide = Lib.CLIENT_PROXY, serverSide = Lib.COMMON_PROXY, modId = Lib.MODID)
 	public static CommonProxy proxy;
@@ -48,8 +48,13 @@ public class PersistentBits
 	{
 		config = new Config(event.getSuggestedConfigurationFile());
 		chunkLoader = new BlockChunkLoader();
-		ForgeChunkManager.setForcedChunkLoadingCallback(instance, new ChunkLoadingCallback());
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(chunkLoader, 1), new Object[] { " E ", "DOD", "OXO", 'E', Items.ENDER_PEARL, 'D', "gemDiamond", 'O', Blocks.OBSIDIAN, 'X', Blocks.ENCHANTING_TABLE }));
+	}
+	
+	@EventHandler
+	public void init(FMLInitializationEvent event)
+	{
+		ForgeChunkManager.setForcedChunkLoadingCallback(INSTANCE, new ChunkLoadingCallback());
 	}
 
 	@EventHandler

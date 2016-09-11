@@ -11,38 +11,39 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraftforge.common.ForgeChunkManager;
+import net.minecraftforge.common.ForgeChunkManager.Ticket;
 
 public class TileChunkLoader extends TileEntity
 {
-	private ForgeChunkManager.Ticket chunkTicket;
+	private Ticket chunkTicket;
 	private GameProfile owner;
 	private boolean showingChunks;
-	
+
 	public boolean isShowingChunks()
 	{
 		return this.showingChunks;
 	}
-	
+
 	public void setChunksShown()
 	{
 		this.showingChunks = true;
 	}
-	
+
 	public void setChunksHidden()
 	{
 		this.showingChunks = false;
 	}
-	
+
 	public GameProfile getOwner()
 	{
 		return this.owner;
 	}
-	
+
 	public void setOwner(GameProfile profile)
 	{
 		this.owner = profile;
 	}
-	
+
 	public List<ChunkPos> getLoadArea()
 	{
 		List<ChunkPos> loadArea = new LinkedList<ChunkPos>();
@@ -52,9 +53,9 @@ public class TileChunkLoader extends TileEntity
 		// pull chunk coord transform out of the loop
 		int cx = this.getPos().getX() >> 4;
 		int cz = this.getPos().getZ() >> 4;
-		
+
 		// previous loop went from -R to (R-1), so one chunk further in
-		// both negative directions.  this change goes from -R to R instead.
+		// both negative directions. this change goes from -R to R instead.
 		//
 		// or you can do "xMod = radMin + 1; xMod < radMax" if -(R-1) to (R-1)
 		// was the intention... depends on whether you want to define
@@ -79,7 +80,7 @@ public class TileChunkLoader extends TileEntity
 		super.validate();
 		if ((!this.worldObj.isRemote) && (this.chunkTicket == null))
 		{
-			ForgeChunkManager.Ticket ticket = ForgeChunkManager.requestTicket(PersistentBits.instance, this.worldObj, ForgeChunkManager.Type.NORMAL);
+			Ticket ticket = ForgeChunkManager.requestTicket(PersistentBits.INSTANCE, this.worldObj, ForgeChunkManager.Type.NORMAL);
 			if (ticket != null)
 			{
 				forceChunkLoading(ticket);
@@ -94,22 +95,20 @@ public class TileChunkLoader extends TileEntity
 		stopChunkLoading();
 	}
 
-	public void forceChunkLoading(ForgeChunkManager.Ticket ticket)
+	public void forceChunkLoading(Ticket ticket)
 	{
-		stopChunkLoading();
 		this.chunkTicket = ticket;
-		for (ChunkPos coord : getLoadArea())
-		{
-			ForgeChunkManager.forceChunk(this.chunkTicket, coord);
-		}
-	}
 
-	public void unforceChunkLoading()
-	{
-		for (Object obj : this.chunkTicket.getChunkList())
+		if (ticket != null)
 		{
-			ChunkPos coord = (ChunkPos) obj;
-			ForgeChunkManager.unforceChunk(this.chunkTicket, coord);
+			ticket.getModData().setInteger("x", pos.getX());
+			ticket.getModData().setInteger("y", pos.getY());
+			ticket.getModData().setInteger("z", pos.getZ());
+			
+			for (ChunkPos coord : getLoadArea())
+			{
+				ForgeChunkManager.forceChunk(ticket, coord);
+			}
 		}
 	}
 
@@ -127,18 +126,18 @@ public class TileChunkLoader extends TileEntity
 	{
 		String owner = compound.getString("ownerName");
 		UUID id = compound.getUniqueId("uuid");
-		
+
 		this.owner = new GameProfile(id, owner);
-		
+
 		super.readFromNBT(compound);
 	}
-	
+
 	@Override
-    public NBTTagCompound writeToNBT(NBTTagCompound compound)
-    {
+	public NBTTagCompound writeToNBT(NBTTagCompound compound)
+	{
 		compound.setString("ownerName", this.owner.getName());
 		compound.setUniqueId("uuid", this.owner.getId());
-		
-        return super.writeToNBT(compound);
-    }
+
+		return super.writeToNBT(compound);
+	}
 }
