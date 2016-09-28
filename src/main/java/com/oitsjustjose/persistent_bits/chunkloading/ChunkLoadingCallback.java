@@ -1,5 +1,9 @@
 package com.oitsjustjose.persistent_bits.chunkloading;
 
+/**
+ * Implementation of a mod-specific Chunk Loading Callback via Forge
+ */
+
 import java.util.List;
 
 import com.oitsjustjose.persistent_bits.tileentity.TileChunkLoader;

@@ -14,6 +14,7 @@ import com.oitsjustjose.persistent_bits.security.Security;
 import com.oitsjustjose.persistent_bits.tileentity.TileChunkLoader;
 
 import net.minecraft.block.BlockContainer;
+import net.minecraft.block.BlockStainedGlassPane;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -23,6 +24,7 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -49,18 +51,7 @@ public class BlockChunkLoader extends BlockContainer
 	public BlockChunkLoader()
 	{
 		super(Material.ROCK);
-		this.setHardness(10F);
-		this.setResistance(1000F);
-		this.setSoundType(SoundType.STONE);
-		this.setCreativeTab(CreativeTabs.REDSTONE);
-		this.setUnlocalizedName(Lib.MODID + ".chunk_loader");
-		this.setRegistryName(new ResourceLocation(Lib.MODID, "chunk_loader"));
-		GameRegistry.register(this);
-		GameRegistry.register(new ItemBlock(this), new ResourceLocation(Lib.MODID, "chunk_loader"));
-		GameRegistry.registerTileEntity(TileChunkLoader.class, Lib.MODID + "chunk_loader");
-		if (PersistentBits.config.enableSecurity)
-			MinecraftForge.EVENT_BUS.register(new Security());
-		this.chatUtil = new ChatUtil();
+		this.initializeBlock();
 	}
 
 	@Override
@@ -81,6 +72,7 @@ public class BlockChunkLoader extends BlockContainer
 		return false;
 	}
 
+	@Override
 	public EnumBlockRenderType getRenderType(IBlockState state)
 	{
 		return EnumBlockRenderType.MODEL;
@@ -93,6 +85,7 @@ public class BlockChunkLoader extends BlockContainer
 
 	}
 
+	// Toggles the loaded-chunk indicator
 	@Override
 	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
 	{
@@ -104,6 +97,9 @@ public class BlockChunkLoader extends BlockContainer
 		return true;
 	}
 
+	// Sets the owner properly if security is enabled
+	// Adds the DimCoordinate to the serialized database
+	// Log notification of placement
 	@Override
 	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack)
 	{
@@ -122,6 +118,8 @@ public class BlockChunkLoader extends BlockContainer
 		super.onBlockPlacedBy(world, pos, state, placer, stack);
 	}
 
+	// Removed the DimCoordinate from the serialized database
+	// Log notification of removal
 	@Override
 	public void breakBlock(World world, BlockPos pos, IBlockState state)
 	{
@@ -142,12 +140,26 @@ public class BlockChunkLoader extends BlockContainer
 		}
 	}
 
+	/**
+	 * Toggles an in-world representation of which chunks are loaded
+	 * 
+	 * @param world
+	 *            Block / TE's worldObj
+	 * @param pos
+	 *            Block / TE's Position
+	 * @param player
+	 *            Player who activated block
+	 * @param chunkTile
+	 *            TE that was right-clicked
+	 */
 	public void toggleVisualization(World world, BlockPos pos, @Nullable EntityPlayer player, TileChunkLoader chunkTile)
 	{
 		if (world.isRemote)
 		{
 			List<BlockPos> chunkCenters = new LinkedList<BlockPos>();
 			List<ChunkPos> area = chunkTile.getLoadArea();
+			// Chosen for simplification of changing the block (for debug)
+			IBlockState marker = Blocks.STAINED_GLASS_PANE.getDefaultState().withProperty(BlockStainedGlassPane.COLOR, EnumDyeColor.RED);
 
 			for (ChunkPos c : area)
 				chunkCenters.add(c.getCenterBlock(pos.getY()));
@@ -158,8 +170,8 @@ public class BlockChunkLoader extends BlockContainer
 				if (player != null)
 					this.chatUtil.sendNoSpamMessages(new TextComponentString("Loaded Chunks hidden").setStyle(new Style().setColor(TextFormatting.DARK_PURPLE)));
 				for (BlockPos p : chunkCenters)
-					for (int i = 0; p.up(i).getY() < 255; i++)
-						if (world.getBlockState(p.up(i)) == Blocks.STAINED_GLASS_PANE.getStateFromMeta(14))
+					for (int i = 0; p.up(i).getY() < p.getY() + PersistentBits.config.maxHeightIndicator; i++)
+						if (world.getBlockState(p.up(i)) == marker)
 							world.setBlockToAir(p.up(i));
 			}
 			else
@@ -170,18 +182,49 @@ public class BlockChunkLoader extends BlockContainer
 					this.chatUtil.sendNoSpamMessages(new TextComponentString("Loaded Chunks shown").setStyle(new Style().setColor(TextFormatting.AQUA)));
 
 				for (BlockPos p : chunkCenters)
-					for (int i = 0; p.up(i).getY() < 255; i++)
+					for (int i = 0; p.up(i).getY() < p.getY() + PersistentBits.config.maxHeightIndicator; i++)
 						if (world.isAirBlock(p.up(i)))
-							world.setBlockState(p.up(i), Blocks.STAINED_GLASS_PANE.getStateFromMeta(14));
+							world.setBlockState(p.up(i), marker);
 			}
 		}
 	}
 
-	// Some code borrowed from BloodMagic :D
+	/**
+	 * A condensed way of doing boring block init
+	 */
+	public void initializeBlock()
+	{
+		// Standard block constructor stuff
+		this.setHardness(10F);
+		this.setResistance(1000F);
+		this.setSoundType(SoundType.STONE);
+		this.setCreativeTab(CreativeTabs.REDSTONE);
+		// Internalized Names. Mostly important for models & textures
+		this.setUnlocalizedName(Lib.MODID + ".chunk_loader");
+		this.setRegistryName(new ResourceLocation(Lib.MODID, "chunk_loader"));
+		// GameRegistry registration - one for block, one for ItemBlock, one for TE
+		GameRegistry.register(this);
+		GameRegistry.register(new ItemBlock(this), new ResourceLocation(Lib.MODID, "chunk_loader"));
+		GameRegistry.registerTileEntity(TileChunkLoader.class, Lib.MODID + "chunk_loader");
+		// Registers the security event if it's enabled
+		if (PersistentBits.config.enableSecurity)
+			MinecraftForge.EVENT_BUS.register(new Security());
+		this.chatUtil = new ChatUtil();
+	}
+
+	/**
+	 * @author WayofTime
+	 * 
+	 *         Code borrowed from BloodMagic Ensures chat notiifications aren't spammy
+	 */
 	public class ChatUtil
 	{
 		private int lastAdded;
 
+		/**
+		 * @param messages
+		 *            ITextComponent to be sent, which can be replaced later
+		 */
 		private void sendNoSpamMessages(ITextComponent... messages)
 		{
 			GuiNewChat chat = Minecraft.getMinecraft().ingameGUI.getChatGUI();

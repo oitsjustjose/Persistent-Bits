@@ -13,6 +13,12 @@ public class DimCoordinate implements Serializable
 	private static final long serialVersionUID = -2309676475992160338L;
 	private int x, y, z, dimension;
 
+	/**
+	 * @param pos
+	 *            The BlockPos of the Block in question
+	 * @param dim
+	 *            The Dimension in which the BlockPos parameter is located
+	 */
 	public DimCoordinate(BlockPos pos, int dim)
 	{
 		this.x = pos.getX();
@@ -21,6 +27,16 @@ public class DimCoordinate implements Serializable
 		this.dimension = dim;
 	}
 
+	/**
+	 * @param x
+	 *            The x-coord of the block
+	 * @param y
+	 *            The y-coord of the block
+	 * @param z
+	 *            The z-coord of the block
+	 * @param dim
+	 *            The Dimension in which the block is located
+	 */
 	public DimCoordinate(int x, int y, int z, int dim)
 	{
 		this.x = x;
@@ -29,16 +45,23 @@ public class DimCoordinate implements Serializable
 		this.dimension = dim;
 	}
 
+	/**
+	 * @return The BlockPos of the DimCoordinate
+	 */
 	public BlockPos getPos()
 	{
 		return new BlockPos(x, y, z);
 	}
 
+	/**
+	 * @return The Dimension ID of the DimCoordinate
+	 */
 	public int getDimensionID()
 	{
 		return this.dimension;
 	}
 
+	// Overridden to ensure proper functionality
 	@Override
 	public boolean equals(Object other)
 	{
@@ -53,10 +76,10 @@ public class DimCoordinate implements Serializable
 						if (detOther.getPos().getZ() == this.z)
 							return true;
 		}
-
 		return false;
 	}
 
+	// Overridden to simplify logging / debug
 	@Override
 	public String toString()
 	{

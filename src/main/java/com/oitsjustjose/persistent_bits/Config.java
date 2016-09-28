@@ -11,6 +11,7 @@ public class Config
 	public boolean enableSecurity;
 	public boolean enableNotification;
 	public int radius;
+	public int maxHeightIndicator;
 
 	public Config(File configFile)
 	{
@@ -39,6 +40,11 @@ public class Config
 		property = config.get(Configuration.CATEGORY_GENERAL, "Chunk Loading Radius", 3);
 		property.setComment("The radius of chunks covered by the loader");
 		radius = property.getInt();
+		
+		property = config.get(Configuration.CATEGORY_CLIENT, "Max Height for Loaded Chunk Indicator", 24, "", 0, 255);
+		property.setComment("This is how many blocks above the current Y level the loaded chunk indicators will pillar up to");
+		maxHeightIndicator = property.getInt();
+		
 
 		if (config.hasChanged())
 			config.save();

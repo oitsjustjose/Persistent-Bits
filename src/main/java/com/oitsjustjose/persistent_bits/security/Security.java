@@ -1,5 +1,11 @@
 package com.oitsjustjose.persistent_bits.security;
 
+/**
+ * @author oitsjustjose
+ * 
+ * A simple class for allowing block breaking security on Chunk Loaders
+ */
+
 import com.mojang.authlib.GameProfile;
 import com.oitsjustjose.persistent_bits.tileentity.TileChunkLoader;
 

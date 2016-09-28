@@ -50,7 +50,7 @@ public class PersistentBits
 		chunkLoader = new BlockChunkLoader();
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(chunkLoader, 1), new Object[] { " E ", "DOD", "OXO", 'E', Items.ENDER_PEARL, 'D', "gemDiamond", 'O', Blocks.OBSIDIAN, 'X', Blocks.ENCHANTING_TABLE }));
 	}
-	
+
 	@EventHandler
 	public void init(FMLInitializationEvent event)
 	{
@@ -60,16 +60,19 @@ public class PersistentBits
 	@EventHandler
 	public void postInit(FMLInitializationEvent event)
 	{
+		// Handles model registration via forge
+		// Normally I use a Lib for automation for this, but
+		// PersistentBits has only one block
 		if (event.getSide().isClient())
 		{
 			ClientProxy.register(Item.getItemFromBlock(chunkLoader));
 		}
 	}
 
+	// Handles re-loading Chunk Loaders on world load
 	@EventHandler
 	public void serverStarted(FMLServerStartedEvent event)
 	{
-		// Handles re-loading Chunk Loaders on world load
 		database = new ChunkLoadingDatabase();
 
 		WorldServer world;

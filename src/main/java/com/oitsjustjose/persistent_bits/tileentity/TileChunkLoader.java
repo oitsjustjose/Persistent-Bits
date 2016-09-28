@@ -19,31 +19,52 @@ public class TileChunkLoader extends TileEntity
 	private GameProfile owner;
 	private boolean showingChunks;
 
+	/**
+	 * @return if the TE is displaying chunks it loads
+	 */
 	public boolean isShowingChunks()
 	{
 		return this.showingChunks;
 	}
 
+	/**
+	 * Sets the TE to display chunks it loads
+	 */
 	public void setChunksShown()
 	{
 		this.showingChunks = true;
 	}
 
+	/**
+	 * Disables TE displaying chunks it loads
+	 */
 	public void setChunksHidden()
 	{
 		this.showingChunks = false;
 	}
 
+	/**
+	 * @return the GameProfile of the placer of this TE
+	 */
 	public GameProfile getOwner()
 	{
 		return this.owner;
 	}
 
+	/**
+	 * Sets the GameProfile of the TileEntity
+	 * 
+	 * @param profile
+	 *            The GameProfile to be bound to the TE
+	 */
 	public void setOwner(GameProfile profile)
 	{
 		this.owner = profile;
 	}
 
+	/**
+	 * @return A LinkedList of Chunk Positions that are loaded by this TE
+	 */
 	public List<ChunkPos> getLoadArea()
 	{
 		List<ChunkPos> loadArea = new LinkedList<ChunkPos>();
@@ -95,6 +116,10 @@ public class TileChunkLoader extends TileEntity
 		stopChunkLoading();
 	}
 
+	/**
+	 * @param ticket
+	 *            The ticket to start using to load chunks with
+	 */
 	public void forceChunkLoading(Ticket ticket)
 	{
 		stopChunkLoading();
@@ -114,6 +139,11 @@ public class TileChunkLoader extends TileEntity
 		}
 	}
 
+	/**
+	 * @param ticket
+	 *            The ticket to check against
+	 * @return true if the ticket's x, y and z match one which is loaded
+	 */
 	public boolean hasTicketAlready(Ticket ticket)
 	{
 		NBTTagCompound comp = ticket.getModData();
@@ -133,6 +163,9 @@ public class TileChunkLoader extends TileEntity
 		return false;
 	}
 
+	/**
+	 * Stops this TE from ChunkLoading by releasing the ticket
+	 */
 	public void stopChunkLoading()
 	{
 		if (this.chunkTicket != null)
@@ -141,6 +174,8 @@ public class TileChunkLoader extends TileEntity
 			this.chunkTicket = null;
 		}
 	}
+
+	// NBT is used to store the parts needed to create a GameProfile on load / unload
 
 	@Override
 	public void readFromNBT(NBTTagCompound compound)
@@ -156,9 +191,12 @@ public class TileChunkLoader extends TileEntity
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound compound)
 	{
+		if (compound == null)
+			compound = new NBTTagCompound();
+		
 		compound.setString("ownerName", this.owner.getName());
 		compound.setUniqueId("uuid", this.owner.getId());
-
+		
 		return super.writeToNBT(compound);
 	}
 }
