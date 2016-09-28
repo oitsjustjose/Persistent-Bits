@@ -1,6 +1,6 @@
 [
 {
-  "modid": "PersistentBits",
+  "modid": "persistentbits",
   "name": "Persistent Bits",
   "description": "A simple, no-fuss chunk loader!",
   "version": "${version}",
