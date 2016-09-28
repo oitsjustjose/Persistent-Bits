@@ -148,18 +148,11 @@ public class TileChunkLoader extends TileEntity
 	{
 		NBTTagCompound comp = ticket.getModData();
 		if (comp != null)
-		{
 			if (comp.getInteger("x") == pos.getX())
-			{
 				if (comp.getInteger("y") == pos.getY())
-				{
 					if (comp.getInteger("z") == pos.getZ())
-					{
 						return true;
-					}
-				}
-			}
-		}
+
 		return false;
 	}
 
@@ -191,12 +184,9 @@ public class TileChunkLoader extends TileEntity
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound compound)
 	{
-		if (compound == null)
-			compound = new NBTTagCompound();
-		
 		compound.setString("ownerName", this.owner.getName());
 		compound.setUniqueId("uuid", this.owner.getId());
-		
+
 		return super.writeToNBT(compound);
 	}
 }

@@ -215,7 +215,8 @@ public class BlockChunkLoader extends BlockContainer
 	/**
 	 * @author WayofTime
 	 * 
-	 *         Code borrowed from BloodMagic Ensures chat notiifications aren't spammy
+	 *         Code borrowed from BloodMagic
+	 * 
 	 */
 	public class ChatUtil
 	{
