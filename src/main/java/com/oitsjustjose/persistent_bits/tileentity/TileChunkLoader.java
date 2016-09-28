@@ -51,8 +51,8 @@ public class TileChunkLoader extends TileEntity
 		int radMin = 0 - radMax;
 
 		// pull chunk coord transform out of the loop
-		int cx = this.getPos().getX() >> 4;
-		int cz = this.getPos().getZ() >> 4;
+		int cx = pos.getX() >> 4;
+		int cz = pos.getZ() >> 4;
 
 		// previous loop went from -R to (R-1), so one chunk further in
 		// both negative directions. this change goes from -R to R instead.
@@ -97,19 +97,40 @@ public class TileChunkLoader extends TileEntity
 
 	public void forceChunkLoading(Ticket ticket)
 	{
+		stopChunkLoading();
 		this.chunkTicket = ticket;
 
-		if (ticket != null)
+		if (ticket != null && !hasTicketAlready(ticket))
 		{
+
 			ticket.getModData().setInteger("x", pos.getX());
 			ticket.getModData().setInteger("y", pos.getY());
 			ticket.getModData().setInteger("z", pos.getZ());
-			
-			for (ChunkPos coord : getLoadArea())
+
+			for (ChunkPos chunk : getLoadArea())
 			{
-				ForgeChunkManager.forceChunk(ticket, coord);
+				ForgeChunkManager.forceChunk(this.chunkTicket, chunk);
 			}
 		}
+	}
+
+	public boolean hasTicketAlready(Ticket ticket)
+	{
+		NBTTagCompound comp = ticket.getModData();
+		if (comp != null)
+		{
+			if (comp.getInteger("x") == pos.getX())
+			{
+				if (comp.getInteger("y") == pos.getY())
+				{
+					if (comp.getInteger("z") == pos.getZ())
+					{
+						return true;
+					}
+				}
+			}
+		}
+		return false;
 	}
 
 	public void stopChunkLoading()

@@ -24,7 +24,6 @@ public class ChunkLoadingCallback implements LoadingCallback
 			if ((tile instanceof TileChunkLoader)) 
 			{
 				((TileChunkLoader) tile).forceChunkLoading(ticket);
-				
 			}
 		}
 	}
