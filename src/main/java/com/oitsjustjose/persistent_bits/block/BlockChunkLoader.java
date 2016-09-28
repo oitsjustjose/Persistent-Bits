@@ -217,6 +217,7 @@ public class BlockChunkLoader extends BlockContainer
 	 * 
 	 *         Code borrowed from BloodMagic
 	 * 
+	 *         Ensures chat notifications aren't spammy
 	 */
 	public class ChatUtil
 	{
