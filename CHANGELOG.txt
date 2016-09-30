@@ -1,3 +1,9 @@
+1.0.6:
+-Added: Config Option to control max height of loaded chunk indicator - SHOULD FIX INTENSE LAG, TOO.
+-Fixed (MAJOR): Chunk Loaders not releasing their Tickets when broken.
+-Fixed (MAYBE): Supposed corruption (unconfirmed, never got logs / bug reports) on worlds when closing. Maybe. Not sure what caused it to begin with.
+-Changed: ModID to all lower case internally. Doesn't make a single difference to end user. 1.11-proofing, mostly.
+-Changed: Refactors and JavaDoc - doesn't affect the end user either.
 1.0.4:
 -Added: Right Click now shows chunks that are loaded (this is client-side only)
 1.0.3:
