@@ -1,4 +1,4 @@
-1.0.6:
+1.0.5:
 -Added: Config Option to control max height of loaded chunk indicator - SHOULD FIX INTENSE LAG, TOO.
 -Fixed (MAJOR): Chunk Loaders not releasing their Tickets when broken.
 -Fixed (MAYBE): Supposed corruption (unconfirmed, never got logs / bug reports) on worlds when closing. Maybe. Not sure what caused it to begin with.
