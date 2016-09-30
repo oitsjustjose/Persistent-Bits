@@ -125,7 +125,7 @@ public class TileChunkLoader extends TileEntity
 		stopChunkLoading();
 		this.chunkTicket = ticket;
 
-		if (ticket != null && !hasTicketAlready(ticket))
+		if (ticket != null)
 		{
 
 			ticket.getModData().setInteger("x", pos.getX());
@@ -137,23 +137,6 @@ public class TileChunkLoader extends TileEntity
 				ForgeChunkManager.forceChunk(this.chunkTicket, chunk);
 			}
 		}
-	}
-
-	/**
-	 * @param ticket
-	 *            The ticket to check against
-	 * @return true if the ticket's x, y and z match one which is loaded
-	 */
-	public boolean hasTicketAlready(Ticket ticket)
-	{
-		NBTTagCompound comp = ticket.getModData();
-		if (comp != null)
-			if (comp.getInteger("x") == pos.getX())
-				if (comp.getInteger("y") == pos.getY())
-					if (comp.getInteger("z") == pos.getZ())
-						return true;
-
-		return false;
 	}
 
 	/**

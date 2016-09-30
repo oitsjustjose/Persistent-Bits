@@ -125,6 +125,11 @@ public class BlockChunkLoader extends BlockContainer
 	{
 		if (!world.isRemote)
 		{
+			// Fix for tickets not being released
+			TileChunkLoader chunkTile = (TileChunkLoader) world.getTileEntity(pos);
+			if (chunkTile != null)
+				chunkTile.stopChunkLoading();
+
 			if (PersistentBits.config.enableNotification)
 				PersistentBits.LOGGER.info("Chunk Loader at coordinates: x = " + pos.getX() + ", y = " + pos.getY() + ", z = " + pos.getZ() + " in Dimension " + world.provider.getDimension() + " has been destroyed.");
 			// In a try/catch to avoid the block from just disappearing if it for some reason can't re-serialize the .dat
@@ -137,6 +142,7 @@ public class BlockChunkLoader extends BlockContainer
 				PersistentBits.LOGGER.info("Concurrent Modification Exception caught!");
 				super.breakBlock(world, pos, state);
 			}
+
 		}
 	}
 

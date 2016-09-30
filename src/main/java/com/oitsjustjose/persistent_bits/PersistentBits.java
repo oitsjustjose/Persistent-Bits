@@ -4,9 +4,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.oitsjustjose.persistent_bits.block.BlockChunkLoader;
-import com.oitsjustjose.persistent_bits.chunkloading.DimCoordinate;
 import com.oitsjustjose.persistent_bits.chunkloading.ChunkLoadingCallback;
 import com.oitsjustjose.persistent_bits.chunkloading.ChunkLoadingDatabase;
+import com.oitsjustjose.persistent_bits.chunkloading.DimCoordinate;
 import com.oitsjustjose.persistent_bits.proxy.ClientProxy;
 import com.oitsjustjose.persistent_bits.proxy.CommonProxy;
 import com.oitsjustjose.persistent_bits.tileentity.TileChunkLoader;
