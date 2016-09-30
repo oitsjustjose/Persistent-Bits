@@ -125,10 +125,11 @@ public class BlockChunkLoader extends BlockContainer
 	{
 		if (!world.isRemote)
 		{
-			// Fix for tickets not being released
+			// Releases Chunk Ticket when Broken
 			TileChunkLoader chunkTile = (TileChunkLoader) world.getTileEntity(pos);
+			
 			if (chunkTile != null)
-				chunkTile.stopChunkLoading();
+				chunkTile.stopChunkLoading();			
 
 			if (PersistentBits.config.enableNotification)
 				PersistentBits.LOGGER.info("Chunk Loader at coordinates: x = " + pos.getX() + ", y = " + pos.getY() + ", z = " + pos.getZ() + " in Dimension " + world.provider.getDimension() + " has been destroyed.");
@@ -154,7 +155,7 @@ public class BlockChunkLoader extends BlockContainer
 	 * @param pos
 	 *            Block / TE's Position
 	 * @param player
-	 *            Player who activated block
+	 *            Player who activated block - CAN BE NULL - null player means no chat notification
 	 * @param chunkTile
 	 *            TE that was right-clicked
 	 */
