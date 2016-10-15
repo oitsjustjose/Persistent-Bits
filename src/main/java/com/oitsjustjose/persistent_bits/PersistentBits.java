@@ -61,15 +61,16 @@ public class PersistentBits
 	public void postInit(FMLInitializationEvent event)
 	{
 		// Handles model registration via forge
-		// Normally I use a Lib for automation for this, but
-		// PersistentBits has only one block
+		// Normally I use a Lib for automation for this,
+		// but PersistentBits has only one block
 		if (event.getSide().isClient())
 		{
 			ClientProxy.register(Item.getItemFromBlock(chunkLoader));
 		}
 	}
 
-	// Handles re-loading Chunk Loaders on world load
+	// Handles all of the self-loading features
+	// Moved to "ServerStarted" to improve compat
 	@EventHandler
 	public void serverStarted(FMLServerStartedEvent event)
 	{
@@ -77,6 +78,7 @@ public class PersistentBits
 
 		WorldServer world;
 		database.deserialize();
+
 		for (DimCoordinate coord : database.getCoordinates())
 		{
 			world = DimensionManager.getWorld(coord.getDimensionID());
@@ -85,7 +87,6 @@ public class PersistentBits
 				TileChunkLoader chunkLoader = (TileChunkLoader) world.getTileEntity(coord.getPos());
 				if (chunkLoader != null)
 				{
-					world.loadedTileEntityList.add(chunkLoader);
 					chunkLoader.setWorldObj(world);
 					chunkLoader.validate();
 					if (config.enableNotification)

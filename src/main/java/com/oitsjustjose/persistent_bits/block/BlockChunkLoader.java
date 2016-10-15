@@ -13,6 +13,7 @@ import com.oitsjustjose.persistent_bits.chunkloading.DimCoordinate;
 import com.oitsjustjose.persistent_bits.security.Security;
 import com.oitsjustjose.persistent_bits.tileentity.TileChunkLoader;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.BlockStainedGlassPane;
 import net.minecraft.block.SoundType;
@@ -51,7 +52,22 @@ public class BlockChunkLoader extends BlockContainer
 	public BlockChunkLoader()
 	{
 		super(Material.ROCK);
-		this.initializeBlock();
+		// Standard block constructor stuff
+		this.setHardness(10F);
+		this.setResistance(1000F);
+		this.setSoundType(SoundType.STONE);
+		this.setCreativeTab(CreativeTabs.REDSTONE);
+		// Internalized Names. Mostly important for models & textures
+		this.setUnlocalizedName(Lib.MODID + ".chunk_loader");
+		this.setRegistryName(new ResourceLocation(Lib.MODID, "chunk_loader"));
+		// GameRegistry registration - one for block, one for ItemBlock, one for TE
+		GameRegistry.register(this);
+		GameRegistry.register(new ItemBlock(this), new ResourceLocation(Lib.MODID, "chunk_loader"));
+		GameRegistry.registerTileEntity(TileChunkLoader.class, Lib.MODID + "chunk_loader");
+		// Registers the security event if it's enabled
+		if (PersistentBits.config.enableSecurity)
+			MinecraftForge.EVENT_BUS.register(new Security());
+		this.chatUtil = new ChatUtil();
 	}
 
 	@Override
@@ -127,9 +143,9 @@ public class BlockChunkLoader extends BlockContainer
 		{
 			// Releases Chunk Ticket when Broken
 			TileChunkLoader chunkTile = (TileChunkLoader) world.getTileEntity(pos);
-			
+
 			if (chunkTile != null)
-				chunkTile.stopChunkLoading();			
+				chunkTile.stopChunkLoading();
 
 			if (PersistentBits.config.enableNotification)
 				PersistentBits.LOGGER.info("Chunk Loader at coordinates: x = " + pos.getX() + ", y = " + pos.getY() + ", z = " + pos.getZ() + " in Dimension " + world.provider.getDimension() + " has been destroyed.");
@@ -166,7 +182,7 @@ public class BlockChunkLoader extends BlockContainer
 			List<BlockPos> chunkCenters = new LinkedList<BlockPos>();
 			List<ChunkPos> area = chunkTile.getLoadArea();
 			// Chosen for simplification of changing the block (for debug)
-			IBlockState marker = Blocks.STAINED_GLASS_PANE.getDefaultState().withProperty(BlockStainedGlassPane.COLOR, EnumDyeColor.RED);
+			IBlockState marker = parseMarker();
 
 			for (ChunkPos c : area)
 				chunkCenters.add(c.getCenterBlock(pos.getY()));
@@ -196,27 +212,23 @@ public class BlockChunkLoader extends BlockContainer
 		}
 	}
 
-	/**
-	 * A condensed way of doing boring block init
-	 */
-	public void initializeBlock()
+	@SuppressWarnings("deprecation")
+	public IBlockState parseMarker()
 	{
-		// Standard block constructor stuff
-		this.setHardness(10F);
-		this.setResistance(1000F);
-		this.setSoundType(SoundType.STONE);
-		this.setCreativeTab(CreativeTabs.REDSTONE);
-		// Internalized Names. Mostly important for models & textures
-		this.setUnlocalizedName(Lib.MODID + ".chunk_loader");
-		this.setRegistryName(new ResourceLocation(Lib.MODID, "chunk_loader"));
-		// GameRegistry registration - one for block, one for ItemBlock, one for TE
-		GameRegistry.register(this);
-		GameRegistry.register(new ItemBlock(this), new ResourceLocation(Lib.MODID, "chunk_loader"));
-		GameRegistry.registerTileEntity(TileChunkLoader.class, Lib.MODID + "chunk_loader");
-		// Registers the security event if it's enabled
-		if (PersistentBits.config.enableSecurity)
-			MinecraftForge.EVENT_BUS.register(new Security());
-		this.chatUtil = new ChatUtil();
+		String name = PersistentBits.config.chunkIndicator;
+		String[] parts = name.split(":");
+		if (parts.length == 2 || parts.length == 3)
+		{
+			ResourceLocation loc = new ResourceLocation(parts[0], parts[1]);
+			Block block = Block.REGISTRY.getObject(loc);
+			if(block != null)
+			{
+				return parts.length == 2 ? block.getDefaultState() :  block.getStateFromMeta(Integer.parseInt(parts[2]));
+			}
+		}
+		
+		PersistentBits.LOGGER.info("There was an issue parsing your marker block option. Please check your config's formatting.");
+		return Blocks.STAINED_GLASS_PANE.getDefaultState().withProperty(BlockStainedGlassPane.COLOR, EnumDyeColor.RED);
 	}
 
 	/**

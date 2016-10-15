@@ -13,7 +13,10 @@ import com.oitsjustjose.persistent_bits.PersistentBits;
 import net.minecraftforge.common.DimensionManager;
 
 /**
- * A class for storing and serializing the locations of all chunk loaders on server start
+ * 
+ * @author oitsjustjose
+ * 
+ *         A class for storing and serializing the locations of all chunk loaders on server start Files are rewritten each time a Chunk Loader is broken or placed, preventing world corruption in the case of an unexpected world close / server shutdown
  */
 
 public class ChunkLoadingDatabase
@@ -21,12 +24,20 @@ public class ChunkLoadingDatabase
 	private HashSet<DimCoordinate> chunkLoaderCoords = new HashSet<DimCoordinate>();
 	File fileLocation = new File(DimensionManager.getCurrentSaveRootDirectory(), "PersistentBits.dat");
 
+	/**
+	 * @param newCoord
+	 *            Coordinate to be added to the serialized file
+	 */
 	public void addChunkCoord(DimCoordinate newCoord)
 	{
 		this.chunkLoaderCoords.add(newCoord);
 		this.serialize();
 	}
 
+	/**
+	 * @param coordToRemove
+	 *            Coordinate to be removed from the serialized file
+	 */
 	public void removeChunkCoord(DimCoordinate coordToRemove)
 	{
 		for (DimCoordinate d : this.chunkLoaderCoords)
@@ -45,6 +56,9 @@ public class ChunkLoadingDatabase
 		return this.chunkLoaderCoords;
 	}
 
+	// This method outputs the chunkLoaderCoords
+	// object to a .dar file which cannot be read
+	// in an editor.
 	public void serialize()
 	{
 		try
@@ -62,6 +76,9 @@ public class ChunkLoadingDatabase
 		}
 	}
 
+	// This method specifically takes the serialized
+	// (i.e. exported) object from the .dat file
+	// and reads it in as an initialized object.
 	@SuppressWarnings("unchecked")
 	public void deserialize()
 	{

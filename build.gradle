@@ -12,12 +12,16 @@ buildscript {
 }
 apply plugin: 'net.minecraftforge.gradle.forge'
 
-version = "1.0.5"
+version = "1.0.6"
 group= "com.oitsjustjose.persistent_bits"
 archivesBaseName = "PersistentBits-1.10.2"
 
+dependencies {
+    compile files("extrautils2-1.10.2-alpha-1.1.0b-deobf.jar")
+}
+
 minecraft {
-    version = "1.10.2-12.18.0.2010"
+    version = "1.10.2-12.18.2.2102"
     
 	if (file('../run').exists()){
 	runDir = "../run"
