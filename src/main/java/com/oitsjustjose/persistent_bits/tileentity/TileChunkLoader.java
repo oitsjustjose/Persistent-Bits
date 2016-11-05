@@ -167,9 +167,14 @@ public class TileChunkLoader extends TileEntity
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound compound)
 	{
-		compound.setString("ownerName", this.owner.getName());
-		compound.setUniqueId("uuid", this.owner.getId());
+		if (compound == null)
+			compound = new NBTTagCompound();
 
+		if (this.owner != null)
+		{
+			compound.setString("ownerName", this.owner.getName());
+			compound.setUniqueId("uuid", this.owner.getId());
+		}
 		return super.writeToNBT(compound);
 	}
 }
