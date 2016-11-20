@@ -1,23 +1,5 @@
 package com.oitsjustjose.persistent_bits.proxy;
 
-/**
- * @author oitsjustjose with asiekierka's help (and others)
- * 
- * This code is free to be used to help you out. Just change the assignment of the variables
- * MODID and tab to be your proper MODID and CreativeTab, then this class will work for you!
- * 
- * NOTE: It is assumed that you initialize your items' / blocks' unlocalized names using
- * .setUnlocalizedName(MODID + ".<youDesiredNameHere>"); - this is critical for function below 
- * 
- * Item models will need to be placed in assets/<your_modid_all_lowercase_no_spaces>/models/items
- * Block models will need to be placed in assets/<your_modid_all_lowercase_no_spaces>/models/blocks
- * Block models will need BlockState files too, in assets/<your_modid_all_lowercase_no_spaces>/blockstates
- * 
- */
-
-import java.util.ArrayList;
-import java.util.List;
-
 import com.oitsjustjose.persistent_bits.Lib;
 
 import net.minecraft.block.Block;
@@ -28,6 +10,7 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -46,13 +29,13 @@ public class ClientProxy extends CommonProxy
 	{
 		int meta = 0;
 
-		List<ItemStack> subItems = new ArrayList<ItemStack>();
+		NonNullList<ItemStack> subItems = NonNullList.func_191196_a();
 		item.getSubItems(item, tab, subItems);
 		for (ItemStack sub : subItems)
 		{
 			String name = item.getUnlocalizedName(sub).substring(MODID.length() + 6).toLowerCase();
-			ModelBakery.registerItemVariants(item, new ResourceLocation(MODID.toLowerCase(), name));
-			Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(item, meta, new ModelResourceLocation(MODID.toLowerCase() + ":" + name, "inventory"));
+			ModelBakery.registerItemVariants(item, new ResourceLocation(MODID, name));
+			Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(item, meta, new ModelResourceLocation(MODID + ":" + name, "inventory"));
 			meta++;
 		}
 
@@ -70,19 +53,19 @@ public class ClientProxy extends CommonProxy
 		// Checks if the block has metadata / subtypes
 		if (itemBlock.getHasSubtypes())
 		{
-			List<ItemStack> subItems = new ArrayList<ItemStack>();
+			NonNullList<ItemStack> subItems = NonNullList.func_191196_a();
 			itemBlock.getSubItems(itemBlock, tab, subItems);
 			for (ItemStack sub : subItems)
 			{
-				String name = itemBlock.getUnlocalizedName(sub).toLowerCase().replace(MODID.toLowerCase() + ".", "").replace("tile.", "");
-				ModelBakery.registerItemVariants(itemBlock, new ResourceLocation(MODID.toLowerCase(), name));
-				Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(itemBlock, meta, new ModelResourceLocation(MODID.toLowerCase() + ":" + name, "inventory"));
+				String name = itemBlock.getUnlocalizedName(sub).toLowerCase().replace(MODID + ".", "").replace("tile.", "");
+				ModelBakery.registerItemVariants(itemBlock, new ResourceLocation(MODID, name));
+				Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(itemBlock, meta, new ModelResourceLocation(MODID + ":" + name, "inventory"));
 				meta++;
 			}
 		}
 		else
 		{
-			Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(itemBlock, 0, new ModelResourceLocation(MODID.toLowerCase() + ":" + block.getUnlocalizedName().substring(MODID.length() + 6).toLowerCase(), "inventory"));
+			Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(itemBlock, 0, new ModelResourceLocation(MODID + ":" + block.getUnlocalizedName().substring(MODID.length() + 6).toLowerCase(), "inventory"));
 		}
 	}
 }

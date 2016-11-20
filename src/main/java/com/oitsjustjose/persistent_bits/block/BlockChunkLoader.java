@@ -103,7 +103,7 @@ public class BlockChunkLoader extends BlockContainer
 
 	// Toggles the loaded-chunk indicator
 	@Override
-	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
+	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing heldItem, float side, float hitX, float hitY)
 	{
 		TileChunkLoader chunkTile = (TileChunkLoader) world.getTileEntity(pos);
 		if (chunkTile != null)
@@ -185,7 +185,7 @@ public class BlockChunkLoader extends BlockContainer
 			IBlockState marker = parseMarker();
 
 			for (ChunkPos c : area)
-				chunkCenters.add(c.getCenterBlock(pos.getY()));
+				chunkCenters.add(new BlockPos(((c.chunkXPos << 4) + 8), pos.getY(), (c.chunkZPos << 4) + 8));
 
 			if (chunkTile.isShowingChunks())
 			{
@@ -221,12 +221,12 @@ public class BlockChunkLoader extends BlockContainer
 		{
 			ResourceLocation loc = new ResourceLocation(parts[0], parts[1]);
 			Block block = Block.REGISTRY.getObject(loc);
-			if(block != null)
+			if (block != null)
 			{
-				return parts.length == 2 ? block.getDefaultState() :  block.getStateFromMeta(Integer.parseInt(parts[2]));
+				return parts.length == 2 ? block.getDefaultState() : block.getStateFromMeta(Integer.parseInt(parts[2]));
 			}
 		}
-		
+
 		PersistentBits.LOGGER.info("There was an issue parsing your marker block option. Please check your config's formatting.");
 		return Blocks.STAINED_GLASS_PANE.getDefaultState().withProperty(BlockStainedGlassPane.COLOR, EnumDyeColor.RED);
 	}

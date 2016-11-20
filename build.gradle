@@ -14,14 +14,14 @@ apply plugin: 'net.minecraftforge.gradle.forge'
 
 version = "1.0.6"
 group= "com.oitsjustjose.persistent_bits"
-archivesBaseName = "PersistentBits-1.10.2"
+archivesBaseName = "PersistentBits-1.11"
 
 dependencies {
     compile files("extrautils2-1.10.2-alpha-1.1.0b-deobf.jar")
 }
 
 minecraft {
-    version = "1.10.2-12.18.2.2125"
+    version = "1.11-13.19.0.2153"
     
 	if (file('../run').exists()){
 	runDir = "../run"
@@ -32,7 +32,7 @@ minecraft {
     replaceIn "/Lib.java"
     replace "@VERSION@", project.version
 	
-    mappings = "snapshot_20160518"
+    mappings = "snapshot_20161111"
 }
 
 task deobfJar(type: Jar) {

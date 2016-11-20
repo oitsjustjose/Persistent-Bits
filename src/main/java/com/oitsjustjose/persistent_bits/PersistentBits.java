@@ -29,7 +29,7 @@ import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
-@Mod(modid = Lib.MODID, name = Lib.NAME, version = Lib.VERSION, acceptedMinecraftVersions = "1.9.4", dependencies = "after:rftoolsdim")
+@Mod(modid = Lib.MODID, name = Lib.NAME, version = Lib.VERSION, acceptedMinecraftVersions = "1.11", dependencies = "after:rftoolsdim")
 public class PersistentBits
 {
 	@Instance(Lib.MODID)
@@ -38,7 +38,7 @@ public class PersistentBits
 	@SidedProxy(clientSide = Lib.CLIENT_PROXY, serverSide = Lib.COMMON_PROXY, modId = Lib.MODID)
 	public static CommonProxy proxy;
 
-	public static Logger LOGGER = LogManager.getLogger(Lib.MODID);
+	public static Logger LOGGER = LogManager.getLogger(Lib.NAME);
 	public static Config config;
 	public static Block chunkLoader;
 	public static ChunkLoadingDatabase database;
