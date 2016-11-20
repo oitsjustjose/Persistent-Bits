@@ -21,7 +21,7 @@ dependencies {
 }
 
 minecraft {
-    version = "1.10.2-12.18.2.2102"
+    version = "1.10.2-12.18.2.2125"
     
 	if (file('../run').exists()){
 	runDir = "../run"
