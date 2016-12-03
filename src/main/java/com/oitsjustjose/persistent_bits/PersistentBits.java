@@ -87,7 +87,7 @@ public class PersistentBits
 				TileChunkLoader chunkLoader = (TileChunkLoader) world.getTileEntity(coord.getPos());
 				if (chunkLoader != null)
 				{
-					chunkLoader.setWorldObj(world);
+					chunkLoader.setWorld(world);
 					chunkLoader.validate();
 					if (config.enableNotification)
 						LOGGER.info("The Chunk Loader at " + coord + " has been automatically loaded!");

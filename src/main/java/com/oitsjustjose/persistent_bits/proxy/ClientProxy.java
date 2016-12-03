@@ -29,7 +29,7 @@ public class ClientProxy extends CommonProxy
 	{
 		int meta = 0;
 
-		NonNullList<ItemStack> subItems = NonNullList.func_191196_a();
+		NonNullList<ItemStack> subItems = NonNullList.create();
 		item.getSubItems(item, tab, subItems);
 		for (ItemStack sub : subItems)
 		{
@@ -53,7 +53,7 @@ public class ClientProxy extends CommonProxy
 		// Checks if the block has metadata / subtypes
 		if (itemBlock.getHasSubtypes())
 		{
-			NonNullList<ItemStack> subItems = NonNullList.func_191196_a();
+			NonNullList<ItemStack> subItems = NonNullList.create();
 			itemBlock.getSubItems(itemBlock, tab, subItems);
 			for (ItemStack sub : subItems)
 			{

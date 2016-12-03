@@ -16,12 +16,8 @@ version = "1.0.6"
 group= "com.oitsjustjose.persistent_bits"
 archivesBaseName = "PersistentBits-1.11"
 
-dependencies {
-    compile files("extrautils2-1.10.2-alpha-1.1.0b-deobf.jar")
-}
-
 minecraft {
-    version = "1.11-13.19.0.2153"
+    version = "1.11-13.19.0.2178"
     
 	if (file('../run').exists()){
 	runDir = "../run"

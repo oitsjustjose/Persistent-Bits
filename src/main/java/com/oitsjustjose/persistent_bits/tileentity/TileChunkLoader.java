@@ -99,9 +99,9 @@ public class TileChunkLoader extends TileEntity
 	public void validate()
 	{
 		super.validate();
-		if ((!this.worldObj.isRemote) && (this.chunkTicket == null))
+		if ((!this.world.isRemote) && (this.chunkTicket == null))
 		{
-			Ticket ticket = ForgeChunkManager.requestTicket(PersistentBits.INSTANCE, this.worldObj, ForgeChunkManager.Type.NORMAL);
+			Ticket ticket = ForgeChunkManager.requestTicket(PersistentBits.INSTANCE, this.world, ForgeChunkManager.Type.NORMAL);
 			if (ticket != null)
 			{
 				forceChunkLoading(ticket);
