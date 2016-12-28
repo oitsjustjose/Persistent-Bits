@@ -17,18 +17,19 @@ group= "com.oitsjustjose.persistent_bits"
 archivesBaseName = "PersistentBits-1.11"
 
 minecraft {
-    version = "1.11-13.19.0.2178"
-    
+  version = "1.11.2-13.20.0.2201"
+
 	if (file('../run').exists()){
 	runDir = "../run"
 	} else {
 		runDir = "run"
-	}    
-    useDepAts = true
-    replaceIn "/Lib.java"
-    replace "@VERSION@", project.version
-	
-    mappings = "snapshot_20161111"
+	}
+
+  useDepAts = true
+  replaceIn "/Lib.java"
+  replace "@VERSION@", project.version
+
+  mappings = "snapshot_20161220"
 }
 
 task deobfJar(type: Jar) {
@@ -51,7 +52,7 @@ processResources
         include 'mcmod.info'
 		expand 'version':project.version, 'mcversion':project.minecraft.version
     }
-        
+
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
     }
