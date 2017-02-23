@@ -17,7 +17,7 @@ group= "com.oitsjustjose.persistent_bits"
 archivesBaseName = "PersistentBits-1.11"
 
 minecraft {
-  version = "1.11.2-13.20.0.2201"
+    version = "1.11.2-13.20.0.2237"
 
 	if (file('../run').exists()){
 	runDir = "../run"
