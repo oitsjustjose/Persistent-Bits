@@ -7,7 +7,6 @@ import com.oitsjustjose.persistent_bits.block.BlockChunkLoader;
 import com.oitsjustjose.persistent_bits.chunkloading.ChunkLoadingCallback;
 import com.oitsjustjose.persistent_bits.chunkloading.ChunkLoadingDatabase;
 import com.oitsjustjose.persistent_bits.chunkloading.DimCoordinate;
-import com.oitsjustjose.persistent_bits.proxy.ClientProxy;
 import com.oitsjustjose.persistent_bits.proxy.CommonProxy;
 import com.oitsjustjose.persistent_bits.tileentity.TileChunkLoader;
 
@@ -63,10 +62,7 @@ public class PersistentBits
 		// Handles model registration via forge
 		// Normally I use a Lib for automation for this,
 		// but PersistentBits has only one block
-		if (event.getSide().isClient())
-		{
-			ClientProxy.register(Item.getItemFromBlock(chunkLoader));
-		}
+		proxy.register(Item.getItemFromBlock(chunkLoader));
 	}
 
 	// Handles all of the self-loading features

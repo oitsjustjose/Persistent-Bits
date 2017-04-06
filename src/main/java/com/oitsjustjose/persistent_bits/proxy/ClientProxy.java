@@ -42,7 +42,7 @@ public class ClientProxy extends CommonProxy
 	 *            The Item to register a model registry for. You still have to make the model file, but now MC will know where to look
 	 */
 	@SideOnly(Side.CLIENT)
-	public static void register(Item item)
+	public void register(Item item)
 	{
 		int meta = 0;
 
@@ -55,7 +55,6 @@ public class ClientProxy extends CommonProxy
 			Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(item, meta, new ModelResourceLocation(MODID.toLowerCase() + ":" + name, "inventory"));
 			meta++;
 		}
-
 	}
 
 	/**
@@ -63,7 +62,7 @@ public class ClientProxy extends CommonProxy
 	 *            The Item to register a model registry for. You still have to make the model file, but now MC will know where to look
 	 */
 	@SideOnly(Side.CLIENT)
-	public static void register(Block block)
+	public void register(Block block)
 	{
 		int meta = 0;
 		ItemBlock itemBlock = new ItemBlock(block);

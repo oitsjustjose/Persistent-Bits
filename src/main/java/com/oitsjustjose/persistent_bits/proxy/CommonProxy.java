@@ -1,5 +1,8 @@
 package com.oitsjustjose.persistent_bits.proxy;
 
+import net.minecraft.block.Block;
+import net.minecraft.item.Item;
+
 /**
  * @author oitsjustjose
  *
@@ -8,11 +11,11 @@ package com.oitsjustjose.persistent_bits.proxy;
 
 public class CommonProxy
 {
-	public static void preInit()
+	public void register(Block block)
 	{
-	};
+	}
 
-	public static void init()
+	public void register(Item item)
 	{
-	};
+	}
 }
