@@ -139,11 +139,11 @@ public class BlockChunkLoader extends BlockContainer
 	@Override
 	public void breakBlock(World world, BlockPos pos, IBlockState state)
 	{
+		// Releases Chunk Ticket when Broken
+		TileChunkLoader chunkTile = (TileChunkLoader) world.getTileEntity(pos);
+
 		if (!world.isRemote)
 		{
-			// Releases Chunk Ticket when Broken
-			TileChunkLoader chunkTile = (TileChunkLoader) world.getTileEntity(pos);
-
 			if (chunkTile != null)
 				chunkTile.stopChunkLoading();
 
@@ -159,7 +159,6 @@ public class BlockChunkLoader extends BlockContainer
 				PersistentBits.LOGGER.info("Concurrent Modification Exception caught!");
 				super.breakBlock(world, pos, state);
 			}
-
 		}
 	}
 
@@ -212,7 +211,6 @@ public class BlockChunkLoader extends BlockContainer
 		}
 	}
 
-	@SuppressWarnings("deprecation")
 	public IBlockState parseMarker()
 	{
 		String name = PersistentBits.config.chunkIndicator;
@@ -221,12 +219,12 @@ public class BlockChunkLoader extends BlockContainer
 		{
 			ResourceLocation loc = new ResourceLocation(parts[0], parts[1]);
 			Block block = Block.REGISTRY.getObject(loc);
-			if(block != null)
+			if (block != null)
 			{
-				return parts.length == 2 ? block.getDefaultState() :  block.getStateFromMeta(Integer.parseInt(parts[2]));
+				return parts.length == 2 ? block.getDefaultState() : block.getStateForPlacement(null, null, null, 0, 0, 0, Integer.parseInt(parts[2]), null, new ItemStack(block, 1, Integer.parseInt(parts[2])));
 			}
 		}
-		
+
 		PersistentBits.LOGGER.info("There was an issue parsing your marker block option. Please check your config's formatting.");
 		return Blocks.STAINED_GLASS_PANE.getDefaultState().withProperty(BlockStainedGlassPane.COLOR, EnumDyeColor.RED);
 	}
