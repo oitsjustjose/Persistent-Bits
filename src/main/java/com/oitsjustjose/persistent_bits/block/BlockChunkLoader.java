@@ -58,7 +58,7 @@ public class BlockChunkLoader extends BlockContainer
 		this.setSoundType(SoundType.STONE);
 		this.setCreativeTab(CreativeTabs.REDSTONE);
 		// Internalized Names. Mostly important for models & textures
-		this.setUnlocalizedName(Lib.MODID + ".chunk_loader");
+		this.setUnlocalizedName("chunk_loader");
 		this.setRegistryName(new ResourceLocation(Lib.MODID, "chunk_loader"));
 		// GameRegistry registration - one for block, one for ItemBlock, one for TE
 		GameRegistry.register(this);
