@@ -24,22 +24,21 @@ public class ClientProxy extends CommonProxy
 	 * @param item
 	 *            The Item to register a model registry for. You still have to make the model file, but now MC will know where to look
 	 */
-	@Override
 	@SideOnly(Side.CLIENT)
 	public void register(Item item)
 	{
+		tab = item.getCreativeTab();
 		int meta = 0;
 
 		NonNullList<ItemStack> subItems = NonNullList.create();
 		item.getSubItems(item, tab, subItems);
 		for (ItemStack sub : subItems)
 		{
-			String name = item.getUnlocalizedName(sub).substring(6).toLowerCase();
+			String name = item.getUnlocalizedName(sub).substring(MODID.length() + 6).toLowerCase();
 			ModelBakery.registerItemVariants(item, new ResourceLocation(MODID, name));
 			Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(item, meta, new ModelResourceLocation(MODID + ":" + name, "inventory"));
 			meta++;
 		}
-
 	}
 
 	/**
