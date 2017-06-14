@@ -34,9 +34,7 @@ public class ClientProxy extends CommonProxy
 		item.getSubItems(tab, subItems);
 		for (ItemStack sub : subItems)
 		{
-			System.out.println("item.getUnlocalizedName(sub): " + item.getUnlocalizedName(sub));
 			String name = item.getUnlocalizedName(sub).substring(MODID.length() + 6).toLowerCase();
-			System.out.println("name: " + name);
 			ModelBakery.registerItemVariants(item, new ResourceLocation(MODID, name));
 			Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(item, meta, new ModelResourceLocation(MODID + ":" + name, "inventory"));
 			meta++;
