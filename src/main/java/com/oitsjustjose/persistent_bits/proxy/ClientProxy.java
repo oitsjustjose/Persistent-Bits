@@ -17,8 +17,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ClientProxy extends CommonProxy
 {
-	static CreativeTabs tab = CreativeTabs.REDSTONE;
-	static String MODID = Lib.MODID;
+	CreativeTabs tab;
+	String MODID = Lib.MODID;
 
 	/**
 	 * @param item
@@ -31,10 +31,12 @@ public class ClientProxy extends CommonProxy
 		int meta = 0;
 
 		NonNullList<ItemStack> subItems = NonNullList.create();
-		item.getSubItems(item, tab, subItems);
+		item.getSubItems(tab, subItems);
 		for (ItemStack sub : subItems)
 		{
+			System.out.println("item.getUnlocalizedName(sub): " + item.getUnlocalizedName(sub));
 			String name = item.getUnlocalizedName(sub).substring(MODID.length() + 6).toLowerCase();
+			System.out.println("name: " + name);
 			ModelBakery.registerItemVariants(item, new ResourceLocation(MODID, name));
 			Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(item, meta, new ModelResourceLocation(MODID + ":" + name, "inventory"));
 			meta++;
@@ -45,17 +47,17 @@ public class ClientProxy extends CommonProxy
 	 * @param block
 	 *            The Item to register a model registry for. You still have to make the model file, but now MC will know where to look
 	 */
-	@Override
 	@SideOnly(Side.CLIENT)
 	public void register(Block block)
 	{
+		tab = block.getCreativeTabToDisplayOn();
 		int meta = 0;
 		ItemBlock itemBlock = new ItemBlock(block);
 		// Checks if the block has metadata / subtypes
 		if (itemBlock.getHasSubtypes())
 		{
 			NonNullList<ItemStack> subItems = NonNullList.create();
-			itemBlock.getSubItems(itemBlock, tab, subItems);
+			itemBlock.getSubItems(tab, subItems);
 			for (ItemStack sub : subItems)
 			{
 				String name = itemBlock.getUnlocalizedName(sub).toLowerCase().replace(MODID + ".", "").replace("tile.", "");
