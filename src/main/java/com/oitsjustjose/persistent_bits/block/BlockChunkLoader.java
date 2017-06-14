@@ -58,7 +58,7 @@ public class BlockChunkLoader extends BlockContainer
 		this.setSoundType(SoundType.STONE);
 		this.setCreativeTab(CreativeTabs.REDSTONE);
 		// Internalized Names. Mostly important for models & textures
-		this.setUnlocalizedName("chunk_loader");
+		this.setUnlocalizedName(Lib.MODID + ".chunk_loader");
 		this.setRegistryName(new ResourceLocation(Lib.MODID, "chunk_loader"));
 		// GameRegistry registration - one for block, one for ItemBlock, one for TE
 		GameRegistry.register(this);
@@ -185,7 +185,7 @@ public class BlockChunkLoader extends BlockContainer
 			IBlockState marker = parseMarker();
 
 			for (ChunkPos c : area)
-				chunkCenters.add(new BlockPos(((c.chunkXPos << 4) + 8), pos.getY(), (c.chunkZPos << 4) + 8));
+				chunkCenters.add(new BlockPos(((c.x << 4) + 8), pos.getY(), (c.z << 4) + 8));
 
 			if (chunkTile.isShowingChunks())
 			{
