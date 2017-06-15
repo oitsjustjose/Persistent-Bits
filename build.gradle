@@ -11,7 +11,7 @@ apply plugin: 'net.minecraftforge.gradle.forge'
 
 version = mod_version
 group= "com.oitsjustjose.persistent_bits"
-archivesBaseName = "PersistentBits-1.11"
+archivesBaseName = "PersistentBits-${minecraft_version}"
 
 sourceCompatibility = targetCompatibility = "1.8"
 compileJava {
