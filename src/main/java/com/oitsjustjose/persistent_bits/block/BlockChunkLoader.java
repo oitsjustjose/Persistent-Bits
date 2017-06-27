@@ -43,6 +43,7 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class BlockChunkLoader extends BlockContainer
@@ -61,8 +62,8 @@ public class BlockChunkLoader extends BlockContainer
 		this.setUnlocalizedName(Lib.MODID + ".chunk_loader");
 		this.setRegistryName(new ResourceLocation(Lib.MODID, "chunk_loader"));
 		// GameRegistry registration - one for block, one for ItemBlock, one for TE
-		GameRegistry.register(this);
-		GameRegistry.register(new ItemBlock(this), new ResourceLocation(Lib.MODID, "chunk_loader"));
+		ForgeRegistries.BLOCKS.register(this);
+		ForgeRegistries.ITEMS.register(new ItemBlock(this).setRegistryName(Lib.MODID, "chunk_loader"));
 		GameRegistry.registerTileEntity(TileChunkLoader.class, Lib.MODID + "chunk_loader");
 		// Registers the security event if it's enabled
 		if (PersistentBits.config.enableSecurity)
