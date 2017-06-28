@@ -1,3 +1,5 @@
+1.0.6a:
+* Updated: Forge Version
 1.0.6:
 * Added: Block Parser for loaded chunk indicators (you can now choose what block shows up as the "x chunk is loaded" indicator).
 * Fixed: NPE with writing to NBT (i.e. "Tile will not persist" log errors).
