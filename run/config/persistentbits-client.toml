@@ -1,9 +1,0 @@
-
-#Client-Side Settings
-[client]
-	#The maximum Y-level to show the loaded chunks indicator
-	#Range: 0 ~ 255
-	maxIndicatorHeight = 128
-	#The block (in form <modid:block>) to use as the indication of the chunks loaded
-	indicatorBlock = "minecraft:purple_stained_glass_pane"
-
