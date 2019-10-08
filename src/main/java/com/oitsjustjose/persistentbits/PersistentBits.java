@@ -43,9 +43,9 @@ public class PersistentBits
 	public Logger LOGGER = LogManager.getLogger();
 
 	@CapabilityInject(IChunkLoaderList.class)
-	public Capability<IChunkLoaderList> CAPABILITY = null;
+	public static Capability<IChunkLoaderList> CAPABILITY = null;
 
-	ChunkLoaderBlock chunkLoader;
+	public final ChunkLoaderBlock CHUNKLOADER = new ChunkLoaderBlock();
 
 	public PersistentBits()
 	{
@@ -83,15 +83,15 @@ public class PersistentBits
 		@SubscribeEvent
 		public static void onBlocksRegistry(final RegistryEvent.Register<Block> blockRegistryEvent)
 		{
-			PersistentBits.getInstance().chunkLoader = new ChunkLoaderBlock();
-			blockRegistryEvent.getRegistry().register(PersistentBits.getInstance().chunkLoader);
+			blockRegistryEvent.getRegistry().register(PersistentBits.getInstance().CHUNKLOADER);
 		}
 
 		@SubscribeEvent
 		public static void onItemsRegistry(final RegistryEvent.Register<Item> itemRegistryEvent)
 		{
-			BlockItem asItem = new BlockItem(PersistentBits.getInstance().chunkLoader,
+			BlockItem asItem = new BlockItem(PersistentBits.getInstance().CHUNKLOADER,
 					new Properties().group(ItemGroup.DECORATIONS));
+			asItem.setRegistryName(ChunkLoaderBlock.REGISTRY_NAME);
 			itemRegistryEvent.getRegistry().register(asItem);
 		}
 	}
@@ -100,7 +100,9 @@ public class PersistentBits
 	public void attachWorldCaps(AttachCapabilitiesEvent<World> event)
 	{
 		if (event.getObject().isRemote)
+		{
 			return;
+		}
 		final LazyOptional<IChunkLoaderList> inst = LazyOptional
 				.of(() -> new ChunkLoaderList((ServerWorld) event.getObject()));
 		final ICapabilitySerializable<INBT> provider = new ICapabilitySerializable<INBT>()

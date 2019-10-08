@@ -6,7 +6,7 @@ modId="persistentbits"
 version="${version}"
 displayName="Persistent Bits"
 displayURL="http://github.com/oitsjustjose/persistent-bits"
-credits="LexManos for help with the new chunkloading mechanics via https://github.com/LexManos/ChunkNoGoByeBye"
+credits="LexManos for help with the new chunkloading mechanics via https://github.com/LexManos/ChunkNoGoByeBye \nhttps://reddit.com/u/fuami-cake for the model"
 authors="oitsjustjose"
 description='''
 A super simple chunk-loading mod which works across world loads - uses the vanilla /forceload mechanic!

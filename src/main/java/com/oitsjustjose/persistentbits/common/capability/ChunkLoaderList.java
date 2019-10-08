@@ -31,14 +31,14 @@ public class ChunkLoaderList implements IChunkLoaderList
         {
             int nowInChunk = loadersPerChunk.get(pos) + 1;
             loadersPerChunk.replace(pos, nowInChunk);
-            if (!currentlyLoading)
-            {
-                forceLoad(pos);
-            }
         }
         else
         {
             loadersPerChunk.put(pos, 1);
+            if (!currentlyLoading)
+            {
+                forceLoad(pos);
+            }
         }
     }
 

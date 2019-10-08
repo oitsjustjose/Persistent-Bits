@@ -55,7 +55,7 @@ public class ChunkLoaderBlock extends Block
     @Nonnull
     public BlockRenderLayer getRenderLayer()
     {
-        return BlockRenderLayer.CUTOUT;
+        return BlockRenderLayer.TRANSLUCENT;
     }
 
     @Override
@@ -65,7 +65,7 @@ public class ChunkLoaderBlock extends Block
         {
             return;
         }
-        world.getCapability(PersistentBits.getInstance().CAPABILITY, null).ifPresent(
+        world.getCapability(PersistentBits.CAPABILITY, null).ifPresent(
                 cap -> cap.add(new ChunkPosDim(pos, world.getDimension().getType().getRegistryName().toString())));
     }
 
@@ -76,7 +76,7 @@ public class ChunkLoaderBlock extends Block
         {
             return;
         }
-        world.getCapability(PersistentBits.getInstance().CAPABILITY, null).ifPresent(
+        world.getCapability(PersistentBits.CAPABILITY, null).ifPresent(
                 cap -> cap.remove(new ChunkPosDim(pos, world.getDimension().getType().getRegistryName().toString())));
     }
 }
