@@ -6,13 +6,13 @@
 
 package com.oitsjustjose.persistentbits.common.capability;
 
-import com.oitsjustjose.persistentbits.common.utils.ChunkPosDim;
+import net.minecraft.util.math.BlockPos;
 
 public interface IChunkLoaderList
 {
-    void add(ChunkPosDim pos);
+    void add(BlockPos pos);
 
-    void remove(ChunkPosDim pos);
+    void remove(BlockPos pos);
 
-    boolean contains(ChunkPosDim pos);
+    boolean contains(BlockPos pos);
 }

@@ -1,15 +1,17 @@
 package com.oitsjustjose.persistentbits.common.block;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import com.oitsjustjose.persistentbits.PersistentBits;
-import com.oitsjustjose.persistentbits.common.utils.ChunkPosDim;
 import com.oitsjustjose.persistentbits.common.utils.Constants;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -59,14 +61,14 @@ public class ChunkLoaderBlock extends Block
     }
 
     @Override
-    public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean isMoving)
+    public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer,
+            ItemStack stack)
     {
         if (world.isRemote)
         {
             return;
         }
-        world.getCapability(PersistentBits.CAPABILITY, null).ifPresent(
-                cap -> cap.add(new ChunkPosDim(pos, world.getDimension().getType().getRegistryName().toString())));
+        world.getCapability(PersistentBits.CAPABILITY, null).ifPresent(cap -> cap.add(pos));
     }
 
     @Override
@@ -76,7 +78,6 @@ public class ChunkLoaderBlock extends Block
         {
             return;
         }
-        world.getCapability(PersistentBits.CAPABILITY, null).ifPresent(
-                cap -> cap.remove(new ChunkPosDim(pos, world.getDimension().getType().getRegistryName().toString())));
+        world.getCapability(PersistentBits.CAPABILITY, null).ifPresent(cap -> cap.remove(pos));
     }
 }

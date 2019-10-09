@@ -1,10 +1,9 @@
 package com.oitsjustjose.persistentbits.common.capability;
 
-import com.oitsjustjose.persistentbits.common.utils.ChunkPosDim;
-
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.util.concurrent.TickDelayedTask;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.Capability.IStorage;
 
@@ -45,17 +44,17 @@ public class ChunkLoaderListStorage implements IStorage<IChunkLoaderList>
 
         try
         {
-            for (String chunkPosDim : serialized.keySet())
+            for (String longString : serialized.keySet())
             {
-                ChunkPosDim asObj = new ChunkPosDim(chunkPosDim);
-                int numInChunk = serialized.getInt(chunkPosDim);
+                long asObj = Long.parseLong(longString);
+                int numInChunk = serialized.getInt(longString);
                 loaderList.loadersPerChunk.put(asObj, numInChunk);
             }
             if (loaderList.world != null)
             {
                 loaderList.world.getServer().enqueue(new TickDelayedTask(1, () -> {
-                    loaderList.loadersPerChunk.keySet().forEach((chunkPosDim) -> {
-                        loaderList.forceLoad(chunkPosDim);
+                    loaderList.loadersPerChunk.keySet().forEach((longObj) -> {
+                        loaderList.forceLoad(BlockPos.fromLong(longObj));
                     });
                 }));
             }
