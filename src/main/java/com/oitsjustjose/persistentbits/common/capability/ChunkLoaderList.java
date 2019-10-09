@@ -85,13 +85,19 @@ public class ChunkLoaderList implements IChunkLoaderList
         {
             for (int z = tmp.z - radius; z <= tmp.z + radius; z++)
             {
-                this.world.getForcedChunks().add(tmp.asLong());
+                this.world.forceChunk(x, z, true);
+
+                if (CommonConfig.ENABLE_LOGGING.get())
+                {
+                    PersistentBits.getInstance().LOGGER.info("Now loading chunk [{}, {}]", x, z);
+                }
             }
         }
     }
 
     public void forceUnload(BlockPos pos)
     {
+
         if (this.world == null || this.world.getServer() == null)
         {
             return;
@@ -104,7 +110,12 @@ public class ChunkLoaderList implements IChunkLoaderList
         {
             for (int z = tmp.z - radius; z <= tmp.z + radius; z++)
             {
-                this.world.getForcedChunks().remove(tmp.asLong());
+                this.world.forceChunk(x, z, false);
+
+                if (CommonConfig.ENABLE_LOGGING.get())
+                {
+                    PersistentBits.getInstance().LOGGER.info("No longer loading chunk [{}, {}]", x, z);
+                }
             }
         }
     }

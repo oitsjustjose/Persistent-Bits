@@ -68,6 +68,7 @@ public class ChunkLoaderBlock extends Block
         {
             return;
         }
+        PersistentBits.getInstance().LOGGER.info("Called onBlockPlacedBy()");
         world.getCapability(PersistentBits.CAPABILITY, null).ifPresent(cap -> cap.add(pos));
     }
 
@@ -78,6 +79,7 @@ public class ChunkLoaderBlock extends Block
         {
             return;
         }
+        PersistentBits.getInstance().LOGGER.info("Called onReplaced()");
         world.getCapability(PersistentBits.CAPABILITY, null).ifPresent(cap -> cap.remove(pos));
     }
 }
