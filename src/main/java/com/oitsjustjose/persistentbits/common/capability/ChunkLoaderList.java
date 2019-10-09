@@ -27,7 +27,7 @@ public class ChunkLoaderList implements IChunkLoaderList
     @Override
     public void add(ChunkPosDim pos)
     {
-        if (loadersPerChunk.containsKey(pos))
+        if (this.contains(pos))
         {
             int nowInChunk = loadersPerChunk.get(pos) + 1;
             loadersPerChunk.replace(pos, nowInChunk);
@@ -45,28 +45,46 @@ public class ChunkLoaderList implements IChunkLoaderList
     @Override
     public void remove(ChunkPosDim pos)
     {
-        if (loadersPerChunk.containsKey(pos))
+        PersistentBits.getInstance().LOGGER.info("Received {} to remove", pos);
+        if (this.contains(pos))
         {
+            PersistentBits.getInstance().LOGGER.info("containsKey");
             int nowInChunk = loadersPerChunk.get(pos) - 1;
+            PersistentBits.getInstance().LOGGER.info("nowInChunk");
             if (nowInChunk == 0)
             {
                 loadersPerChunk.remove(pos);
                 if (!currentlyLoading)
                 {
+                    PersistentBits.getInstance().LOGGER.info("should forceUnload()");
                     forceUnload(pos);
                 }
             }
             else
             {
+                PersistentBits.getInstance().LOGGER.info("won't forceUnload");
                 loadersPerChunk.replace(pos, nowInChunk);
             }
+        }
+        else
+        {
+            PersistentBits.getInstance().LOGGER.info("loadersPerChunk not contain???");
+            PersistentBits.getInstance().LOGGER.info("Contents of loadersPerChunk:\n{}", loadersPerChunk);
+
         }
     }
 
     @Override
     public boolean contains(ChunkPosDim pos)
     {
-        return loadersPerChunk.keySet().contains(pos);
+        for (ChunkPosDim chunkPosDim : loadersPerChunk.keySet())
+        {
+            if (chunkPosDim.equals(pos))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void forceLoad(ChunkPosDim pos)
@@ -84,10 +102,12 @@ public class ChunkLoaderList implements IChunkLoaderList
         {
             for (int z = pos.getZ() - radius; z <= pos.getZ() + radius; z++)
             {
-                this.world.getServer().getCommandManager().handleCommand(source, "forceload add " + x + " " + z);
+
+                this.world.getServer().getCommandManager().handleCommand(source,
+                        "forceload add " + (x << 4) + " " + (z << 4));
                 if (CommonConfig.ENABLE_LOGGING.get())
                 {
-                    PersistentBits.getInstance().LOGGER.info("Now loading chunk [{}, {}]", x, z);
+                    PersistentBits.getInstance().LOGGER.info("Now loading chunk [{}, {}]", x << 4, z << 4);
                 }
             }
         }
@@ -108,10 +128,11 @@ public class ChunkLoaderList implements IChunkLoaderList
         {
             for (int z = pos.getZ() - radius; z <= pos.getZ() + radius; z++)
             {
-                this.world.getServer().getCommandManager().handleCommand(source, "forceload remove " + x + " " + z);
+                this.world.getServer().getCommandManager().handleCommand(source,
+                        "forceload remove " + (x << 4) + " " + (z << 4));
                 if (CommonConfig.ENABLE_LOGGING.get())
                 {
-                    PersistentBits.getInstance().LOGGER.info("No longer loading chunk [{}, {}]", x, z);
+                    PersistentBits.getInstance().LOGGER.info("No longer loading chunk [{}, {}]", x << 4, z << 4);
                 }
             }
         }
