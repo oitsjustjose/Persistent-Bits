@@ -1,50 +1,27 @@
-1.0.6a:
-* Updated: Forge Version
-1.0.6:
-* Added: Block Parser for loaded chunk indicators (you can now choose what block shows up as the "x chunk is loaded" indicator).
-* Fixed: NPE with writing to NBT (i.e. "Tile will not persist" log errors).
-* Source: Added more commenting + JavaDoc commenting (negligible difference for users).
+# Persistent Bits Changelog (1.14)
 
-1.0.5:
-* Added: Config Option to control max height of loaded chunk indicator - SHOULD FIX INTENSE LAG, TOO.
-* Fixed (MAJOR): Chunk Loaders not releasing their Tickets when broken.
-* Fixed (MAYBE): Supposed corruption (unconfirmed, never got logs / bug reports) on worlds when closing. Maybe. Not sure what caused it to begin with.
-* Changed: ModID to all lower case internally. Doesn't make a single difference to end user. 1.11-proofing, mostly.
-* Changed: Refactors and JavaDoc - doesn't affect the end user either.
+## 2.0.1
 
-1.0.4:
-* Added: Right Click now shows chunks that are loaded (this is client-side only)
+### Fixed
 
-1.0.3:
-* Fixed: ClassCastException causing the internal server to stop responding
+* Chunk Loader not dropping anything 🤔
 
-1.0.2:
-* Fixed: NullPointerException causing world load to hang
+## 2.0.0
 
-1.0.1:
-* Fixed: ConcurrentModificationException causing Chunk Loaders to disappear when broken
+### Changed
 
-1.0.0:
-* I think this mod is finally at a 1.0 (non-alpha and non-beta stage)
-* Added: Chunk Loaders now automatically load themselves on world load. You will need to re-place chunk loaders that have already been placed before this will work.
+* Chunk Loaders are no longer tile entities
+  * Using a capability to keep track of the number of Chunk Loaders in a chunk
+  * This capability lets me determine when one is added or removed
+    * When the first one in the chunk is added, force loading is enabled
+    * When the last one in the chunk is broken, force loading is stopped
+* `PersistentBits.dat` isn't a thing anymore - using Forge World Capabilities now
+* Using vanilla Force Load system instead of Forge Tickets (completely native solution 🙂)
+* Loaded chunk "indicator" now uses particles instead of broken client-only visualization blocks
 
-0.5_exp:
-* Changed: Model for Chunk Loader (again) - brought to you by /u/fuami-cake on Reddit!
-* Changed: Internal Refactoring - does not effect end-user
-* Added: Chunk Loader security - players that do not own a chunk loader may not break it
-* Added: Chunk Loaders state their owner on Right-Click
-* Added: Config File
-* Added: Config option for chunk loading radius
-* Added: Config option for Chunk Loader security
+### Fixed
 
-0.4_exp:
-* Fixed: Chunk Loaders not actually working. Derp. GameRegistry stuff.
+(From 1.12.x and below, at least)
 
-0.3_exp:
-* Updated to 1.9.4/1.10/1.10.2
-
-0.2_exp:
-* Changed: Model and Texture for Chunk Loader - now no longer requires any textures, uses all vanilla / resource pack based ones!
-
-0.1_exp:
-* Initial Release: Added Chunk Loader
+* Weirdness with chunk loading tickets not actually working how they're supposed to
+* Any issues with the `PersistentBits.dat` file when the game/world crashes
