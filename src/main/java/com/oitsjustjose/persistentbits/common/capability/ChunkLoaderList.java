@@ -7,7 +7,6 @@ import javax.annotation.Nullable;
 import com.oitsjustjose.persistentbits.PersistentBits;
 import com.oitsjustjose.persistentbits.common.utils.CommonConfig;
 
-import net.minecraft.command.CommandSource;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.server.ServerWorld;
@@ -28,30 +27,33 @@ public class ChunkLoaderList implements IChunkLoaderList
     @Override
     public void add(BlockPos pos)
     {
+        ChunkPos asChunkPos = new ChunkPos(pos);
         if (this.contains(pos))
         {
-            int nowInChunk = loadersPerChunk.get(pos.toLong()) + 1;
-            loadersPerChunk.replace(pos.toLong(), nowInChunk);
+            int nowInChunk = loadersPerChunk.get(asChunkPos.asLong()) + 1;
+            loadersPerChunk.replace(asChunkPos.asLong(), nowInChunk);
         }
         else
         {
-            loadersPerChunk.put(pos.toLong(), 1);
+            loadersPerChunk.put(asChunkPos.asLong(), 1);
             if (!currentlyLoading)
             {
                 forceLoad(pos);
             }
         }
+        PersistentBits.getInstance().LOGGER.info(loadersPerChunk);
     }
 
     @Override
     public void remove(BlockPos pos)
     {
+        ChunkPos asChunkPos = new ChunkPos(pos);
         if (this.contains(pos))
         {
-            int nowInChunk = loadersPerChunk.get(pos.toLong()) - 1;
+            int nowInChunk = loadersPerChunk.get(asChunkPos.asLong()) - 1;
             if (nowInChunk <= 0)
             {
-                loadersPerChunk.remove(pos.toLong());
+                loadersPerChunk.remove(asChunkPos.asLong());
                 if (!currentlyLoading)
                 {
                     forceUnload(pos);
@@ -59,7 +61,7 @@ public class ChunkLoaderList implements IChunkLoaderList
             }
             else
             {
-                loadersPerChunk.replace(pos.toLong(), nowInChunk);
+                loadersPerChunk.replace(asChunkPos.asLong(), nowInChunk);
             }
         }
     }
@@ -67,7 +69,8 @@ public class ChunkLoaderList implements IChunkLoaderList
     @Override
     public boolean contains(BlockPos pos)
     {
-        return this.loadersPerChunk.containsKey(pos.toLong());
+        ChunkPos asChunkPos = new ChunkPos(pos);
+        return this.loadersPerChunk.containsKey(asChunkPos.asLong());
     }
 
     public void forceLoad(BlockPos pos)
@@ -81,16 +84,11 @@ public class ChunkLoaderList implements IChunkLoaderList
         int radius = CommonConfig.LOADING_RADIUS.get();
         ChunkPos tmp = new ChunkPos(pos);
 
-        for (int x = tmp.x - radius; x <= tmp.x + radius; x++)
+        for (int x = tmp.x - radius; x < tmp.x + radius; x++)
         {
-            for (int z = tmp.z - radius; z <= tmp.z + radius; z++)
+            for (int z = tmp.z - radius; z < tmp.z + radius; z++)
             {
                 this.world.forceChunk(x, z, true);
-
-                if (CommonConfig.ENABLE_LOGGING.get())
-                {
-                    PersistentBits.getInstance().LOGGER.info("Now loading chunk [{}, {}]", x, z);
-                }
             }
         }
     }
@@ -106,16 +104,11 @@ public class ChunkLoaderList implements IChunkLoaderList
         int radius = CommonConfig.LOADING_RADIUS.get();
         ChunkPos tmp = new ChunkPos(pos);
 
-        for (int x = tmp.x - radius; x <= tmp.x + radius; x++)
+        for (int x = tmp.x - radius; x < tmp.x + radius; x++)
         {
-            for (int z = tmp.z - radius; z <= tmp.z + radius; z++)
+            for (int z = tmp.z - radius; z < tmp.z + radius; z++)
             {
                 this.world.forceChunk(x, z, false);
-
-                if (CommonConfig.ENABLE_LOGGING.get())
-                {
-                    PersistentBits.getInstance().LOGGER.info("No longer loading chunk [{}, {}]", x, z);
-                }
             }
         }
     }

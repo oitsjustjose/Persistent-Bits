@@ -4,6 +4,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.oitsjustjose.persistentbits.PersistentBits;
+import com.oitsjustjose.persistentbits.common.utils.CommonConfig;
 import com.oitsjustjose.persistentbits.common.utils.Constants;
 
 import net.minecraft.block.Block;
@@ -68,8 +69,12 @@ public class ChunkLoaderBlock extends Block
         {
             return;
         }
-        PersistentBits.getInstance().LOGGER.info("Called onBlockPlacedBy()");
         world.getCapability(PersistentBits.CAPABILITY, null).ifPresent(cap -> cap.add(pos));
+        if (CommonConfig.ENABLE_LOGGING.get())
+        {
+            PersistentBits.getInstance().LOGGER.info("Chunk Loader placed in chunk [{}, {}]", pos.getX() >> 4,
+                    pos.getZ() >> 4);
+        }
     }
 
     @Override
@@ -79,7 +84,11 @@ public class ChunkLoaderBlock extends Block
         {
             return;
         }
-        PersistentBits.getInstance().LOGGER.info("Called onReplaced()");
         world.getCapability(PersistentBits.CAPABILITY, null).ifPresent(cap -> cap.remove(pos));
+        if (CommonConfig.ENABLE_LOGGING.get())
+        {
+            PersistentBits.getInstance().LOGGER.info("Chunk Loader removed in chunk [{}, {}]", pos.getX() >> 4,
+                    pos.getZ() >> 4);
+        }
     }
 }
