@@ -14,7 +14,7 @@ apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
 group = 'com.oitsjustjose.persistentbits' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = "Geolosys-${game_version}"
+archivesBaseName = "PersistentBits-${game_version}"
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 
@@ -31,7 +31,7 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
 
             mods {
-                geolosys {
+                persistentbits {
                     source sourceSets.main
                 }
             }
@@ -47,7 +47,7 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
 
             mods {
-                geolosys {
+                persistentbits {
                     source sourceSets.main
                 }
             }
@@ -85,7 +85,7 @@ dependencies {
 jar {
     manifest {
         attributes([
-            "Specification-Title": "geolosys",
+            "Specification-Title": "persistentbits",
             "Specification-Vendor": "oitsjustjose.com",
             "Specification-Version": "1", // We are version 1 of ourselves
             "Implementation-Title": project.name,
