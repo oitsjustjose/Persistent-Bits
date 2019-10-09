@@ -83,9 +83,9 @@ public class ChunkLoaderList implements IChunkLoaderList
         int radius = CommonConfig.LOADING_RADIUS.get();
         ChunkPos tmp = new ChunkPos(pos);
 
-        for (int x = tmp.x - radius; x < tmp.x + radius; x++)
+        for (int x = tmp.x - radius; x <= tmp.x + radius; x++)
         {
-            for (int z = tmp.z - radius; z < tmp.z + radius; z++)
+            for (int z = tmp.z - radius; z <= tmp.z + radius; z++)
             {
                 this.world.forceChunk(x, z, true);
             }
@@ -103,9 +103,9 @@ public class ChunkLoaderList implements IChunkLoaderList
         int radius = CommonConfig.LOADING_RADIUS.get();
         ChunkPos tmp = new ChunkPos(pos);
 
-        for (int x = tmp.x - radius; x < tmp.x + radius; x++)
+        for (int x = tmp.x - radius; x <= tmp.x + radius; x++)
         {
-            for (int z = tmp.z - radius; z < tmp.z + radius; z++)
+            for (int z = tmp.z - radius; z <= tmp.z + radius; z++)
             {
                 this.world.forceChunk(x, z, false);
             }
