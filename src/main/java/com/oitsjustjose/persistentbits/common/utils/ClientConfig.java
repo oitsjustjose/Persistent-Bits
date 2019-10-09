@@ -14,7 +14,6 @@ public class ClientConfig
     public static final ForgeConfigSpec CLIENT_CONFIG;
     private static final Builder CLIENT_BUILDER = new Builder();
     public static ForgeConfigSpec.IntValue MAX_INDICATOR_HEIGHT;
-    public static ForgeConfigSpec.ConfigValue<String> INDICATOR_BLOCK;
     private static final String CATEGORY_CLIENT = "client";
 
     static
@@ -39,9 +38,6 @@ public class ClientConfig
         MAX_INDICATOR_HEIGHT = CLIENT_BUILDER.comment("The maximum Y-level to show the loaded chunks indicator")
                 .defineInRange("maxIndicatorHeight", 128, 0, 255);
 
-        INDICATOR_BLOCK = CLIENT_BUILDER
-                .comment("The block (in form <modid:block>) to use as the indication of the chunks loaded")
-                .define("indicatorBlock", "minecraft:purple_stained_glass_pane");
         CLIENT_BUILDER.pop();
     }
 }

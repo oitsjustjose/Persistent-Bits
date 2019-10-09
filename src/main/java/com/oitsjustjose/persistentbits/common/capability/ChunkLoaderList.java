@@ -41,7 +41,6 @@ public class ChunkLoaderList implements IChunkLoaderList
                 forceLoad(pos);
             }
         }
-        PersistentBits.getInstance().LOGGER.info(loadersPerChunk);
     }
 
     @Override
