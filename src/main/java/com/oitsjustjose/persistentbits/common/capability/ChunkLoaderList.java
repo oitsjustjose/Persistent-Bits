@@ -9,6 +9,7 @@ import com.oitsjustjose.persistentbits.common.utils.CommonConfig;
 
 import net.minecraft.command.CommandSource;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.server.ServerWorld;
 
 public class ChunkLoaderList implements IChunkLoaderList
@@ -40,7 +41,6 @@ public class ChunkLoaderList implements IChunkLoaderList
                 forceLoad(pos);
             }
         }
-        PersistentBits.getInstance().LOGGER.info("add: {}", loadersPerChunk);
     }
 
     @Override
@@ -62,7 +62,6 @@ public class ChunkLoaderList implements IChunkLoaderList
                 loadersPerChunk.replace(pos.toLong(), nowInChunk);
             }
         }
-        PersistentBits.getInstance().LOGGER.info("remove: {}", loadersPerChunk);
     }
 
     @Override
@@ -73,51 +72,39 @@ public class ChunkLoaderList implements IChunkLoaderList
 
     public void forceLoad(BlockPos pos)
     {
-        int radius = CommonConfig.LOADING_RADIUS.get();
 
         if (this.world == null || this.world.getServer() == null)
         {
             return;
         }
 
-        CommandSource source = this.world.getServer().getCommandSource().withWorld(this.world);
+        int radius = CommonConfig.LOADING_RADIUS.get();
+        ChunkPos tmp = new ChunkPos(pos);
 
-        for (int x = pos.getX() - radius; x <= pos.getX() + radius; x++)
+        for (int x = tmp.x - radius; x <= tmp.x + radius; x++)
         {
-            for (int z = pos.getZ() - radius; z <= pos.getZ() + radius; z++)
+            for (int z = tmp.z - radius; z <= tmp.z + radius; z++)
             {
-
-                this.world.getServer().getCommandManager().handleCommand(source,
-                        "forceload add " + (x << 4) + " " + (z << 4));
-                if (CommonConfig.ENABLE_LOGGING.get())
-                {
-                    PersistentBits.getInstance().LOGGER.info("Now loading chunk [{}, {}]", x << 4, z << 4);
-                }
+                this.world.getForcedChunks().add(tmp.asLong());
             }
         }
     }
 
     public void forceUnload(BlockPos pos)
     {
-        int radius = CommonConfig.LOADING_RADIUS.get();
-
         if (this.world == null || this.world.getServer() == null)
         {
             return;
         }
 
-        CommandSource source = this.world.getServer().getCommandSource().withWorld(this.world);
+        int radius = CommonConfig.LOADING_RADIUS.get();
+        ChunkPos tmp = new ChunkPos(pos);
 
-        for (int x = pos.getX() - radius; x <= pos.getX() + radius; x++)
+        for (int x = tmp.x - radius; x <= tmp.x + radius; x++)
         {
-            for (int z = pos.getZ() - radius; z <= pos.getZ() + radius; z++)
+            for (int z = tmp.z - radius; z <= tmp.z + radius; z++)
             {
-                this.world.getServer().getCommandManager().handleCommand(source,
-                        "forceload remove " + (x << 4) + " " + (z << 4));
-                if (CommonConfig.ENABLE_LOGGING.get())
-                {
-                    PersistentBits.getInstance().LOGGER.info("No longer loading chunk [{}, {}]", x << 4, z << 4);
-                }
+                this.world.getForcedChunks().remove(tmp.asLong());
             }
         }
     }
