@@ -27,7 +27,7 @@ import net.minecraft.particles.ParticleTypes;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
-import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -40,7 +40,6 @@ import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ToolType;
-import net.minecraftforge.registries.ForgeRegistries;
 
 public class ChunkLoaderBlock extends Block implements IWaterLoggable
 {
@@ -50,7 +49,7 @@ public class ChunkLoaderBlock extends Block implements IWaterLoggable
     public ChunkLoaderBlock()
     {
         super(Properties.create(Material.ROCK).hardnessAndResistance(10F, 1000F).sound(SoundType.STONE)
-                .harvestTool(ToolType.PICKAXE).harvestLevel(2));
+                .harvestTool(ToolType.PICKAXE).harvestLevel(2).notSolid());
         this.setRegistryName(REGISTRY_NAME);
         this.setDefaultState(this.stateContainer.getBaseState().with(WATERLOGGED, Boolean.FALSE));
     }
@@ -93,31 +92,18 @@ public class ChunkLoaderBlock extends Block implements IWaterLoggable
     }
 
     @Override
-    public boolean isSolid(BlockState state)
-    {
-        return false;
-    }
-
-    @Override
     @Nonnull
     public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context)
     {
         return VoxelShapes.create(0.0D, 0.0D, 0.0D, 1.0D, 0.5D, 1.0D);
     }
 
-    public boolean onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn,
-            BlockRayTraceResult hit)
+    public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player,
+            Hand handIn, BlockRayTraceResult hit)
     {
         player.sendStatusMessage(new TranslationTextComponent("block.persistentbits.chunk_loader.showing.range"), true);
         showVisualization(worldIn, pos);
-        return true;
-    }
-
-    @Override
-    @Nonnull
-    public BlockRenderLayer getRenderLayer()
-    {
-        return BlockRenderLayer.TRANSLUCENT;
+        return ActionResultType.SUCCESS;
     }
 
     @Override

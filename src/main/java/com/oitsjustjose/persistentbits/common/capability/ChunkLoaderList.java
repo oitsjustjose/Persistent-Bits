@@ -4,7 +4,6 @@ import java.util.HashMap;
 
 import javax.annotation.Nullable;
 
-import com.oitsjustjose.persistentbits.PersistentBits;
 import com.oitsjustjose.persistentbits.common.utils.CommonConfig;
 
 import net.minecraft.util.math.BlockPos;
