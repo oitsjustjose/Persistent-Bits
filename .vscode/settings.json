@@ -1,8 +1,0 @@
-{
-    "code-runner.defaultLanguage": "java",
-    "code-runner.executorMap": {
-        "json": "cd '$workspaceRoot' && ./gradlew runClient",
-        "java": "cd '$workspaceRoot' && ./gradlew runClient",
-    },
-    "keyboard.touchbar.enabled": false
-}
