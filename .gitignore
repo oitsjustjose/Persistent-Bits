@@ -17,3 +17,4 @@ gradle-app.setting
 .classpath
 .project
 .settings/org.eclipse.jdt.core.prefs
+.vscode/settings.json
