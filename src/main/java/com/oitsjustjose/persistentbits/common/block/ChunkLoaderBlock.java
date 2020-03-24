@@ -17,6 +17,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.IWaterLoggable;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.material.PushReaction;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluids;
@@ -52,6 +53,12 @@ public class ChunkLoaderBlock extends Block implements IWaterLoggable
                 .harvestTool(ToolType.PICKAXE).harvestLevel(2).notSolid());
         this.setRegistryName(REGISTRY_NAME);
         this.setDefaultState(this.stateContainer.getBaseState().with(WATERLOGGED, Boolean.FALSE));
+    }
+
+    @Override
+    public PushReaction getPushReaction(BlockState state)
+    {
+        return PushReaction.BLOCK;
     }
 
     @Override
@@ -110,6 +117,7 @@ public class ChunkLoaderBlock extends Block implements IWaterLoggable
     public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer,
             ItemStack stack)
     {
+        showVisualization(placer.getEntityWorld(), pos);
         if (world.isRemote)
         {
             return;
