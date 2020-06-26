@@ -6,6 +6,7 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import com.google.common.collect.Lists;
 import com.oitsjustjose.persistentbits.PersistentBits;
 import com.oitsjustjose.persistentbits.common.utils.ClientConfig;
 import com.oitsjustjose.persistentbits.common.utils.CommonConfig;
@@ -42,11 +43,11 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ToolType;
 
-public class ChunkLoaderBlock extends Block implements IWaterLoggable {
-    public static final ResourceLocation REGISTRY_NAME = new ResourceLocation(Constants.MODID, "chunk_loader");
+public class MiniLoaderBlock extends Block implements IWaterLoggable {
+    public static final ResourceLocation REGISTRY_NAME = new ResourceLocation(Constants.MODID, "mini_loader");
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 
-    public ChunkLoaderBlock() {
+    public MiniLoaderBlock() {
         super(Properties.create(Material.ROCK).hardnessAndResistance(10F, 1000F).sound(SoundType.STONE)
                 .harvestTool(ToolType.PICKAXE).harvestLevel(2).notSolid());
         this.setRegistryName(REGISTRY_NAME);
@@ -55,7 +56,7 @@ public class ChunkLoaderBlock extends Block implements IWaterLoggable {
 
     @Override
     public PushReaction getPushReaction(BlockState state) {
-        return PushReaction.BLOCK;
+        return PushReaction.DESTROY;
     }
 
     @Override
@@ -92,7 +93,7 @@ public class ChunkLoaderBlock extends Block implements IWaterLoggable {
     @Override
     @Nonnull
     public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
-        return VoxelShapes.create(0.0D, 0.0D, 0.0D, 1.0D, 0.5D, 1.0D);
+        return VoxelShapes.create(0.3125D, 0.0D, 0.3125D, 0.6875D, 0.3125D, 0.6875D);
     }
 
     public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player,
@@ -111,7 +112,7 @@ public class ChunkLoaderBlock extends Block implements IWaterLoggable {
         }
         world.getCapability(PersistentBits.CAPABILITY, null).ifPresent(cap -> cap.add(pos));
         if (CommonConfig.ENABLE_LOGGING.get()) {
-            PersistentBits.getInstance().LOGGER.info("Chunk Loader placed in chunk [{}, {}]", pos.getX() >> 4,
+            PersistentBits.getInstance().LOGGER.info("Mini Loader placed in chunk [{}, {}]", pos.getX() >> 4,
                     pos.getZ() >> 4);
         }
     }
@@ -123,23 +124,13 @@ public class ChunkLoaderBlock extends Block implements IWaterLoggable {
         }
         world.getCapability(PersistentBits.CAPABILITY, null).ifPresent(cap -> cap.remove(pos));
         if (CommonConfig.ENABLE_LOGGING.get()) {
-            PersistentBits.getInstance().LOGGER.info("Chunk Loader removed in chunk [{}, {}]", pos.getX() >> 4,
+            PersistentBits.getInstance().LOGGER.info("Mini Loader removed in chunk [{}, {}]", pos.getX() >> 4,
                     pos.getZ() >> 4);
         }
     }
 
     public List<ChunkPos> getLoadArea(BlockPos pos) {
-        ArrayList<ChunkPos> ret = new ArrayList<>();
-        ChunkPos chunkPos = new ChunkPos(pos);
-        int radius = CommonConfig.LOADING_RADIUS.get();
-
-        for (int x = chunkPos.x - radius; x < chunkPos.x + radius; x++) {
-            for (int z = chunkPos.z - radius; z < chunkPos.z + radius; z++) {
-                ret.add(new ChunkPos(x, z));
-            }
-        }
-
-        return ret;
+        return Lists.newArrayList(new ChunkPos(pos));
     }
 
     /**

@@ -2,7 +2,7 @@
     "variants": {
         "": [
             {
-                "model": "persistentbits:block/chunk_loader"
+                "model": "persistentbits:block/mini_loader"
             }
         ]
     }
