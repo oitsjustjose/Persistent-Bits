@@ -3,7 +3,8 @@
     "textures": {
         "1563276556": "minecraft:block/red_wool",
         "311479444": "minecraft:block/diamond_block",
-        "1057042345": "minecraft:block/obsidian"
+        "1057042345": "minecraft:block/obsidian",
+        "particle": "minecraft:block/obsidian"
     },
     "elements": [
         {
