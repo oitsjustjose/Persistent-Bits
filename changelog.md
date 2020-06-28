@@ -1,5 +1,13 @@
 # Persistent Bits Changelog (1.14)
 
+## 2.0.3
+
+***This is the final release of Persistent Bits in 1.14.4 unless there is some major bug. For new features please upgrade to 1.15.2+*** 😀
+
+### Added
+
+- Mini Loader! Loads only one chunk, waterloggable, requires a solid block below. Crafts 9 out of 1 full-size loader, and doesn't conflict if chunk loading overlap occurs.
+
 ## 2.0.1
 
 ### Fixed
