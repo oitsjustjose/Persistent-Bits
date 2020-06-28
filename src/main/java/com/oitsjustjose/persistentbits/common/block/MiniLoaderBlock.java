@@ -30,6 +30,7 @@ import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -40,6 +41,7 @@ import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
+import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ToolType;
 
@@ -84,8 +86,11 @@ public class MiniLoaderBlock extends Block implements IWaterLoggable {
     public void neighborChanged(BlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos,
             boolean isMoving) {
         super.neighborChanged(state, worldIn, pos, blockIn, fromPos, isMoving);
+        if (!this.isValidPosition(state, worldIn, pos)) {
+            worldIn.destroyBlock(pos, true);
+        }
         // Update the water from flowing to still or vice-versa
-        if (state.get(WATERLOGGED)) {
+        else if (state.get(WATERLOGGED)) {
             worldIn.getPendingFluidTicks().scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(worldIn));
         }
     }
@@ -127,6 +132,11 @@ public class MiniLoaderBlock extends Block implements IWaterLoggable {
             PersistentBits.getInstance().LOGGER.info("Mini Loader removed in chunk [{}, {}]", pos.getX() >> 4,
                     pos.getZ() >> 4);
         }
+    }
+
+    @Override
+    public boolean isValidPosition(BlockState state, IWorldReader worldIn, BlockPos pos) {
+        return Block.hasEnoughSolidSide(worldIn, pos.down(), Direction.UP);
     }
 
     public List<ChunkPos> getLoadArea(BlockPos pos) {
