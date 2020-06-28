@@ -110,7 +110,7 @@ public class MiniLoaderBlock extends Block implements IWaterLoggable {
         if (world.isRemote) {
             return;
         }
-        world.getCapability(PersistentBits.CAPABILITY, null).ifPresent(cap -> cap.add(pos));
+        world.getCapability(PersistentBits.MINI_CAPABILITY, null).ifPresent(cap -> cap.add(pos));
         if (CommonConfig.ENABLE_LOGGING.get()) {
             PersistentBits.getInstance().LOGGER.info("Mini Loader placed in chunk [{}, {}]", pos.getX() >> 4,
                     pos.getZ() >> 4);
@@ -122,7 +122,7 @@ public class MiniLoaderBlock extends Block implements IWaterLoggable {
         if (world.isRemote) {
             return;
         }
-        world.getCapability(PersistentBits.CAPABILITY, null).ifPresent(cap -> cap.remove(pos));
+        world.getCapability(PersistentBits.MINI_CAPABILITY, null).ifPresent(cap -> cap.remove(pos));
         if (CommonConfig.ENABLE_LOGGING.get()) {
             PersistentBits.getInstance().LOGGER.info("Mini Loader removed in chunk [{}, {}]", pos.getX() >> 4,
                     pos.getZ() >> 4);

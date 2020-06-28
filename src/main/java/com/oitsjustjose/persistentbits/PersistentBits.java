@@ -4,6 +4,8 @@ import com.oitsjustjose.persistentbits.common.block.ChunkLoaderBlock;
 import com.oitsjustjose.persistentbits.common.block.MiniLoaderBlock;
 import com.oitsjustjose.persistentbits.common.capability.ChunkLoaderList;
 import com.oitsjustjose.persistentbits.common.capability.IChunkLoaderList;
+import com.oitsjustjose.persistentbits.common.capability.IMiniLoaderList;
+import com.oitsjustjose.persistentbits.common.capability.MiniLoaderList;
 import com.oitsjustjose.persistentbits.common.utils.ClientConfig;
 import com.oitsjustjose.persistentbits.common.utils.CommonConfig;
 import com.oitsjustjose.persistentbits.common.utils.Constants;
@@ -44,6 +46,9 @@ public class PersistentBits {
     @CapabilityInject(IChunkLoaderList.class)
     public static Capability<IChunkLoaderList> CAPABILITY = null;
 
+    @CapabilityInject(IMiniLoaderList.class)
+    public static Capability<IMiniLoaderList> MINI_CAPABILITY = null;
+
     public final ChunkLoaderBlock CHUNKLOADER = new ChunkLoaderBlock();
     public final MiniLoaderBlock MINILOADER = new MiniLoaderBlock();
 
@@ -71,6 +76,8 @@ public class PersistentBits {
     public void setup(final FMLCommonSetupEvent event) {
         CapabilityManager.INSTANCE.register(IChunkLoaderList.class, new ChunkLoaderList.Storage(),
                 () -> new ChunkLoaderList(null));
+        CapabilityManager.INSTANCE.register(IMiniLoaderList.class, new MiniLoaderList.Storage(),
+                () -> new MiniLoaderList(null));
     }
 
     @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
@@ -100,6 +107,7 @@ public class PersistentBits {
         if (event.getObject().isRemote) {
             return;
         }
+
         final LazyOptional<IChunkLoaderList> inst = LazyOptional
                 .of(() -> new ChunkLoaderList((ServerWorld) event.getObject()));
         final ICapabilitySerializable<INBT> provider = new ICapabilitySerializable<INBT>() {
@@ -120,5 +128,30 @@ public class PersistentBits {
         };
         event.addCapability(ChunkLoaderBlock.REGISTRY_NAME, provider);
         event.addListener(() -> inst.invalidate());
+
+        /*
+         * -----------------------------------------------------------------------------
+         */
+
+        final LazyOptional<IMiniLoaderList> miniInst = LazyOptional
+                .of(() -> new MiniLoaderList((ServerWorld) event.getObject()));
+        final ICapabilitySerializable<INBT> miniProvider = new ICapabilitySerializable<INBT>() {
+            @Override
+            public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side) {
+                return MINI_CAPABILITY.orEmpty(cap, miniInst);
+            }
+
+            @Override
+            public INBT serializeNBT() {
+                return MINI_CAPABILITY.writeNBT(miniInst.orElse(null), null);
+            }
+
+            @Override
+            public void deserializeNBT(INBT nbt) {
+                MINI_CAPABILITY.readNBT(miniInst.orElse(null), null, nbt);
+            }
+        };
+        event.addCapability(MiniLoaderBlock.REGISTRY_NAME, miniProvider);
+        event.addListener(() -> miniInst.invalidate());
     }
 }

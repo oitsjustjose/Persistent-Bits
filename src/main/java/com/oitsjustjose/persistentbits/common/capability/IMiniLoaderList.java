@@ -8,7 +8,7 @@ package com.oitsjustjose.persistentbits.common.capability;
 
 import net.minecraft.util.math.BlockPos;
 
-public interface IChunkLoaderList {
+public interface IMiniLoaderList {
     void add(BlockPos pos);
 
     void remove(BlockPos pos);

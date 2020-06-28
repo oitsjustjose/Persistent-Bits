@@ -1,14 +1,8 @@
-/**
- * 99% of the credit goes to Lex Manos
- * https://bit.ly/2QHmbMI
- */
-
 package com.oitsjustjose.persistentbits.common.capability;
 
 import javax.annotation.Nullable;
 
 import com.oitsjustjose.persistentbits.PersistentBits;
-import com.oitsjustjose.persistentbits.common.utils.CommonConfig;
 
 import it.unimi.dsi.fastutil.longs.Long2IntMap;
 import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap;
@@ -24,14 +18,15 @@ import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.Capability.IStorage;
 
-public class ChunkLoaderList implements IChunkLoaderList {
+public class MiniLoaderList implements IMiniLoaderList {
+
     private Long2IntMap refCount = new Long2IntOpenHashMap();
     private LongSet loaders = new LongOpenHashSet();
     private boolean loading = false;
     @Nullable
     private final ServerWorld world;
 
-    public ChunkLoaderList(@Nullable ServerWorld world) {
+    public MiniLoaderList(@Nullable ServerWorld world) {
         refCount.defaultReturnValue(Integer.MIN_VALUE);
         this.world = world;
     }
@@ -64,7 +59,7 @@ public class ChunkLoaderList implements IChunkLoaderList {
             if (ref == Integer.MIN_VALUE || --ref <= 0) {
                 if (!loading) {
                     this.unload(pos);
-                    this.world.getCapability(PersistentBits.MINI_CAPABILITY, null).ifPresent((cap) -> {
+                    this.world.getCapability(PersistentBits.CAPABILITY, null).ifPresent((cap) -> {
                         if (cap.chunkContains(pos)) {
                             cap.load(pos);
                         } else {
@@ -77,6 +72,7 @@ public class ChunkLoaderList implements IChunkLoaderList {
                 refCount.put(chunk, ref);
             }
         }
+
     }
 
     @Override
@@ -86,34 +82,14 @@ public class ChunkLoaderList implements IChunkLoaderList {
 
     @Override
     public void load(BlockPos pos) {
-        if (this.world == null || this.world.getServer() == null) {
-            return;
-        }
-
         ChunkPos tmp = new ChunkPos(pos);
-        int radius = CommonConfig.LOADING_RADIUS.get();
-
-        for (int x = tmp.x - radius; x <= tmp.x + radius; x++) {
-            for (int z = tmp.z - radius; z <= tmp.z + radius; z++) {
-                this.world.forceChunk(x, z, true);
-            }
-        }
+        this.world.forceChunk(tmp.x, tmp.z, true);
     }
 
     @Override
     public void unload(BlockPos pos) {
-        if (this.world == null || this.world.getServer() == null) {
-            return;
-        }
-
         ChunkPos tmp = new ChunkPos(pos);
-        int radius = CommonConfig.LOADING_RADIUS.get();
-
-        for (int x = tmp.x - radius; x <= tmp.x + radius; x++) {
-            for (int z = tmp.z - radius; z <= tmp.z + radius; z++) {
-                this.world.forceChunk(x, z, false);
-            }
-        }
+        this.world.forceChunk(tmp.x, tmp.z, false);
     }
 
     @Override
@@ -128,13 +104,13 @@ public class ChunkLoaderList implements IChunkLoaderList {
         return ChunkPos.asLong(pos.getX() >> 4, pos.getZ() >> 4);
     }
 
-    public static class Storage implements IStorage<IChunkLoaderList> {
+    public static class Storage implements IStorage<IMiniLoaderList> {
         @Override
-        public INBT writeNBT(Capability<IChunkLoaderList> capability, IChunkLoaderList instance, Direction side) {
-            if (!(instance instanceof ChunkLoaderList)) {
+        public INBT writeNBT(Capability<IMiniLoaderList> capability, IMiniLoaderList instance, Direction side) {
+            if (!(instance instanceof MiniLoaderList)) {
                 return null;
             }
-            ChunkLoaderList list = (ChunkLoaderList) instance;
+            MiniLoaderList list = (MiniLoaderList) instance;
             long[] data = new long[list.loaders.size()];
             int idx = 0;
             for (long l : list.loaders) {
@@ -144,12 +120,12 @@ public class ChunkLoaderList implements IChunkLoaderList {
         }
 
         @Override
-        public void readNBT(Capability<IChunkLoaderList> capability, IChunkLoaderList instance, Direction side,
+        public void readNBT(Capability<IMiniLoaderList> capability, IMiniLoaderList instance, Direction side,
                 INBT nbt) {
-            if (!(instance instanceof ChunkLoaderList) || !(nbt instanceof LongArrayNBT)) {
+            if (!(instance instanceof MiniLoaderList) || !(nbt instanceof LongArrayNBT)) {
                 return;
             }
-            ChunkLoaderList list = (ChunkLoaderList) instance;
+            MiniLoaderList list = (MiniLoaderList) instance;
             list.loading = true;
             list.refCount.clear();
             list.loaders.clear();
@@ -161,8 +137,8 @@ public class ChunkLoaderList implements IChunkLoaderList {
                     // Run the force commands next tick to make sure they wern't removed.
                     list.world.getServer().enqueue(new TickDelayedTask(1, () -> {
                         for (long l : list.refCount.keySet()) {
-                            ChunkPos chunk = new ChunkPos(l);
-                            list.load(new BlockPos(chunk.x << 4, 0, chunk.z << 4));
+                            ChunkPos tmp = new ChunkPos(l);
+                            list.world.forceChunk(tmp.x, tmp.z, true);
                         }
                     }));
                 }
