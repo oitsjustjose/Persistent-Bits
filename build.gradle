@@ -118,7 +118,7 @@ curseforge {
     changelogType = 'markdown'
     changelog = file("./changelog.md")
     releaseType = 'release'
-    addGameVersion '${game_version}'
+    addGameVersion "${game_version}"
 
     mainArtifact(jar) {
       displayName = "Persistent Bits ${mod_version}"
