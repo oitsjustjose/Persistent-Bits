@@ -9,7 +9,7 @@ package com.oitsjustjose.persistentbits.common.capability;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 
-public interface IChunkLoaderList {
+public interface IMiniLoaderList {
     void add(BlockPos pos);
 
     void remove(BlockPos pos);

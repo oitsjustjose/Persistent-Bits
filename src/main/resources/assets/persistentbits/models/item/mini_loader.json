@@ -1,5 +1,5 @@
 {
-    "parent": "persistentbits:block/chunk_loader",
+    "parent": "persistentbits:block/mini_loader",
     "display": {
         "thirdperson_righthand": {
             "rotation": [

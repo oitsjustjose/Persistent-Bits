@@ -6,7 +6,7 @@
             "entries": [
                 {
                     "type": "minecraft:item",
-                    "name": "persistentbits:chunk_loader"
+                    "name": "persistentbits:mini_loader"
                 }
             ],
             "conditions": [

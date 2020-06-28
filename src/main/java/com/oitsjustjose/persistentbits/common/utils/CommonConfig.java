@@ -10,22 +10,19 @@ import net.minecraftforge.common.ForgeConfigSpec.Builder;
 import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber
-public class CommonConfig
-{
+public class CommonConfig {
     public static final ForgeConfigSpec COMMON_CONFIG;
     private static final Builder COMMON_BUILDER = new Builder();
     public static ForgeConfigSpec.BooleanValue ENABLE_LOGGING;
     public static ForgeConfigSpec.IntValue LOADING_RADIUS;
     private static String CHUNK_LOADING = "chunk loading";
 
-    static
-    {
+    static {
         init();
         COMMON_CONFIG = COMMON_BUILDER.build();
     }
 
-    public static void loadConfig(ForgeConfigSpec spec, Path path)
-    {
+    public static void loadConfig(ForgeConfigSpec spec, Path path) {
         final CommentedFileConfig configData = CommentedFileConfig.builder(path).sync().autosave()
                 .writingMode(WritingMode.REPLACE).build();
 
@@ -33,8 +30,7 @@ public class CommonConfig
         spec.setConfig(configData);
     }
 
-    private static void init()
-    {
+    private static void init() {
         COMMON_BUILDER.comment("chunk loader settings").push(CHUNK_LOADING);
         ENABLE_LOGGING = COMMON_BUILDER.comment("Enable verbose logging of placements and removals of chunk loaders")
                 .define("verboseLoaders", false);

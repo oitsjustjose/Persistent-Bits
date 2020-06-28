@@ -1,0 +1,35 @@
+{
+    "type": "minecraft:crafting_shapeless",
+    "ingredients": [
+        {
+            "item": "persistentbits:mini_loader"
+        },
+        {
+            "item": "persistentbits:mini_loader"
+        },
+        {
+            "item": "persistentbits:mini_loader"
+        },
+        {
+            "item": "persistentbits:mini_loader"
+        },
+        {
+            "item": "persistentbits:mini_loader"
+        },
+        {
+            "item": "persistentbits:mini_loader"
+        },
+        {
+            "item": "persistentbits:mini_loader"
+        },
+        {
+            "item": "persistentbits:mini_loader"
+        },
+        {
+            "item": "persistentbits:mini_loader"
+        }
+    ],
+    "result": {
+        "item": "persistentbits:chunk_loader"
+    }
+}
