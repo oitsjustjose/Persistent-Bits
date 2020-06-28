@@ -58,12 +58,10 @@ public class MiniLoaderList implements IMiniLoaderList {
 
             if (ref == Integer.MIN_VALUE || --ref <= 0) {
                 if (!loading) {
-                    this.unload(pos);
                     this.world.getCapability(PersistentBits.CAPABILITY, null).ifPresent((cap) -> {
-                        if (cap.chunkContains(pos)) {
-                            cap.load(pos);
-                        } else {
-                            cap.unload(pos);
+                        ChunkPos tmp = new ChunkPos(pos);
+                        if (!cap.containsChunk(tmp)) {
+                            this.unload(pos);
                         }
                     });
                 }
@@ -93,10 +91,8 @@ public class MiniLoaderList implements IMiniLoaderList {
     }
 
     @Override
-    public boolean chunkContains(BlockPos pos) {
-        long chunk = toChunk(pos);
-        int ref = refCount.get(chunk);
-        PersistentBits.getInstance().LOGGER.info(ref);
+    public boolean containsChunk(ChunkPos pos) {
+        int ref = refCount.get(pos.asLong());
         return !(ref == Integer.MIN_VALUE || ref <= 0);
     }
 

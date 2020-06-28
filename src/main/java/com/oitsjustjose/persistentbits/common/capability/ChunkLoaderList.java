@@ -63,12 +63,16 @@ public class ChunkLoaderList implements IChunkLoaderList {
 
             if (ref == Integer.MIN_VALUE || --ref <= 0) {
                 if (!loading) {
-                    this.unload(pos);
                     this.world.getCapability(PersistentBits.MINI_CAPABILITY, null).ifPresent((cap) -> {
-                        if (cap.chunkContains(pos)) {
-                            cap.load(pos);
-                        } else {
-                            cap.unload(pos);
+                        ChunkPos tmp = new ChunkPos(pos);
+                        int radius = CommonConfig.LOADING_RADIUS.get();
+
+                        for (int x = tmp.x - radius; x <= tmp.x + radius; x++) {
+                            for (int z = tmp.z - radius; z <= tmp.z + radius; z++) {
+                                if (!cap.containsChunk(new ChunkPos(x, z))) {
+                                    this.world.forceChunk(x, z, false);
+                                }
+                            }
                         }
                     });
                 }
@@ -117,11 +121,21 @@ public class ChunkLoaderList implements IChunkLoaderList {
     }
 
     @Override
-    public boolean chunkContains(BlockPos pos) {
-        long chunk = toChunk(pos);
-        int ref = refCount.get(chunk);
-        PersistentBits.getInstance().LOGGER.info(ref);
-        return !(ref == Integer.MIN_VALUE || ref <= 0);
+    public boolean containsChunk(ChunkPos pos) {
+        for (Long key : this.refCount.keySet()) {
+            ChunkPos tmp = new ChunkPos(key);
+            int radius = CommonConfig.LOADING_RADIUS.get();
+
+            for (int x = tmp.x - radius; x <= tmp.x + radius; x++) {
+                for (int z = tmp.z - radius; z <= tmp.z + radius; z++) {
+                    if (x == pos.x && z == pos.z) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 
     private final long toChunk(BlockPos pos) {
