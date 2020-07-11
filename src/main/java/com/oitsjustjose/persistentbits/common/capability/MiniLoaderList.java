@@ -20,8 +20,8 @@ import net.minecraftforge.common.capabilities.Capability.IStorage;
 
 public class MiniLoaderList implements IMiniLoaderList {
 
-    private Long2IntMap refCount = new Long2IntOpenHashMap();
-    private LongSet loaders = new LongOpenHashSet();
+    private final Long2IntMap refCount = new Long2IntOpenHashMap();
+    private final LongSet loaders = new LongOpenHashSet();
     private boolean loading = false;
     @Nullable
     private final ServerWorld world;
@@ -58,12 +58,14 @@ public class MiniLoaderList implements IMiniLoaderList {
 
             if (ref == Integer.MIN_VALUE || --ref <= 0) {
                 if (!loading) {
-                    this.world.getCapability(PersistentBits.CAPABILITY, null).ifPresent((cap) -> {
-                        ChunkPos tmp = new ChunkPos(pos);
-                        if (!cap.containsChunk(tmp)) {
-                            this.unload(pos);
-                        }
-                    });
+                    if(this.world != null){
+                        this.world.getCapability(PersistentBits.CAPABILITY, null).ifPresent((cap) -> {
+                            ChunkPos tmp = new ChunkPos(pos);
+                            if (!cap.containsChunk(tmp)) {
+                                this.unload(pos);
+                            }
+                        });
+                    }
                 }
                 refCount.remove(chunk);
             } else {
@@ -74,29 +76,28 @@ public class MiniLoaderList implements IMiniLoaderList {
     }
 
     @Override
-    public boolean contains(BlockPos pos) {
-        return loaders.contains(pos.toLong());
-    }
-
-    @Override
     public void load(BlockPos pos) {
         ChunkPos tmp = new ChunkPos(pos);
-        this.world.forceChunk(tmp.x, tmp.z, true);
+        if(this.world != null) {
+            this.world.forceChunk(tmp.x, tmp.z, true);
+        }
     }
 
     @Override
     public void unload(BlockPos pos) {
         ChunkPos tmp = new ChunkPos(pos);
-        this.world.forceChunk(tmp.x, tmp.z, false);
+        if(this.world != null){
+            this.world.forceChunk(tmp.x, tmp.z, false);
+        }
     }
 
     @Override
     public boolean containsChunk(ChunkPos pos) {
         int ref = refCount.get(pos.asLong());
-        return !(ref == Integer.MIN_VALUE || ref <= 0);
+        return !(ref <= 0);
     }
 
-    private final long toChunk(BlockPos pos) {
+    private long toChunk(BlockPos pos) {
         return ChunkPos.asLong(pos.getX() >> 4, pos.getZ() >> 4);
     }
 

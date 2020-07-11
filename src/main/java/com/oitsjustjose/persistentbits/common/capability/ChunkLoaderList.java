@@ -25,8 +25,8 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.Capability.IStorage;
 
 public class ChunkLoaderList implements IChunkLoaderList {
-    private Long2IntMap refCount = new Long2IntOpenHashMap();
-    private LongSet loaders = new LongOpenHashSet();
+    private final Long2IntMap refCount = new Long2IntOpenHashMap();
+    private final LongSet loaders = new LongOpenHashSet();
     private boolean loading = false;
     @Nullable
     private final ServerWorld world;
@@ -62,21 +62,12 @@ public class ChunkLoaderList implements IChunkLoaderList {
             int ref = refCount.get(chunk);
 
             if (ref == Integer.MIN_VALUE || --ref <= 0) {
-                if (!loading) {
-                    this.world.getCapability(PersistentBits.MINI_CAPABILITY, null).ifPresent((cap) -> {
-                        ChunkPos tmp = new ChunkPos(pos);
-                        int radius = CommonConfig.LOADING_RADIUS.get();
-
-                        for (int x = tmp.x - radius; x <= tmp.x + radius; x++) {
-                            for (int z = tmp.z - radius; z <= tmp.z + radius; z++) {
-                                if (!cap.containsChunk(new ChunkPos(x, z))) {
-                                    this.world.forceChunk(x, z, false);
-                                }
-                            }
-                        }
-                    });
-                }
                 refCount.remove(chunk);
+                if (!loading) {
+                    if (this.world != null) {
+                        this.unload(pos);
+                    }
+                }
             } else {
                 refCount.put(chunk, ref);
             }
@@ -84,13 +75,8 @@ public class ChunkLoaderList implements IChunkLoaderList {
     }
 
     @Override
-    public boolean contains(BlockPos pos) {
-        return loaders.contains(pos.toLong());
-    }
-
-    @Override
     public void load(BlockPos pos) {
-        if (this.world == null || this.world.getServer() == null) {
+        if (this.world == null) {
             return;
         }
 
@@ -106,18 +92,24 @@ public class ChunkLoaderList implements IChunkLoaderList {
 
     @Override
     public void unload(BlockPos pos) {
-        if (this.world == null || this.world.getServer() == null) {
+        if (this.world == null) {
             return;
         }
 
-        ChunkPos tmp = new ChunkPos(pos);
-        int radius = CommonConfig.LOADING_RADIUS.get();
+        this.world.getCapability(PersistentBits.MINI_CAPABILITY, null).ifPresent((cap) -> {
+            ChunkPos tmp = new ChunkPos(pos);
+            int radius = CommonConfig.LOADING_RADIUS.get();
 
-        for (int x = tmp.x - radius; x <= tmp.x + radius; x++) {
-            for (int z = tmp.z - radius; z <= tmp.z + radius; z++) {
-                this.world.forceChunk(x, z, false);
+            for (int x = tmp.x - radius; x <= tmp.x + radius; x++) {
+                for (int z = tmp.z - radius; z <= tmp.z + radius; z++) {
+                    if (!cap.containsChunk(new ChunkPos(x, z))) {
+                        if (!this.containsChunk(new ChunkPos(x, z))) {
+                            this.world.forceChunk(x, z, false);
+                        }
+                    }
+                }
             }
-        }
+        });
     }
 
     @Override
@@ -138,7 +130,7 @@ public class ChunkLoaderList implements IChunkLoaderList {
         return false;
     }
 
-    private final long toChunk(BlockPos pos) {
+    private long toChunk(BlockPos pos) {
         return ChunkPos.asLong(pos.getX() >> 4, pos.getZ() >> 4);
     }
 
@@ -159,7 +151,7 @@ public class ChunkLoaderList implements IChunkLoaderList {
 
         @Override
         public void readNBT(Capability<IChunkLoaderList> capability, IChunkLoaderList instance, Direction side,
-                INBT nbt) {
+                            INBT nbt) {
             if (!(instance instanceof ChunkLoaderList) || !(nbt instanceof LongArrayNBT)) {
                 return;
             }

@@ -57,7 +57,9 @@ public class MiniLoaderBlock extends Block implements IWaterLoggable {
     }
 
     @Override
-    public PushReaction getPushReaction(BlockState state) {
+    @Nonnull
+    @SuppressWarnings("deprecation")
+    public PushReaction getPushReaction(@Nonnull BlockState state) {
         return PushReaction.DESTROY;
     }
 
@@ -83,8 +85,8 @@ public class MiniLoaderBlock extends Block implements IWaterLoggable {
 
     @Override
     @SuppressWarnings("deprecation")
-    public void neighborChanged(BlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos,
-            boolean isMoving) {
+    public void neighborChanged(@Nonnull BlockState state, @Nonnull World worldIn, @Nonnull BlockPos pos, @Nonnull Block blockIn, @Nonnull BlockPos fromPos,
+                                boolean isMoving) {
         super.neighborChanged(state, worldIn, pos, blockIn, fromPos, isMoving);
         if (!this.isValidPosition(state, worldIn, pos)) {
             worldIn.destroyBlock(pos, true);
@@ -97,21 +99,24 @@ public class MiniLoaderBlock extends Block implements IWaterLoggable {
 
     @Override
     @Nonnull
-    public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+    @SuppressWarnings("deprecation")
+    public VoxelShape getShape(@Nonnull BlockState state, @Nonnull IBlockReader worldIn, @Nonnull BlockPos pos, @Nonnull ISelectionContext context) {
         return VoxelShapes.create(0.3125D, 0.0D, 0.3125D, 0.6875D, 0.3125D, 0.6875D);
     }
 
-    public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player,
-            Hand handIn, BlockRayTraceResult hit) {
+    @SuppressWarnings("deprecation")
+    @Nonnull
+    public ActionResultType onBlockActivated(@Nonnull BlockState state, @Nonnull World worldIn, @Nonnull BlockPos pos, @Nonnull PlayerEntity player,
+                                             @Nonnull Hand handIn, @Nonnull BlockRayTraceResult hit) {
         player.sendStatusMessage(new TranslationTextComponent("block.persistentbits.chunk_loader.showing.range"), true);
         showVisualization(worldIn, pos);
         return ActionResultType.SUCCESS;
     }
 
     @Override
-    public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer,
-            ItemStack stack) {
-        showVisualization(placer.getEntityWorld(), pos);
+    public void onBlockPlacedBy(@Nonnull World world, @Nonnull BlockPos pos, @Nonnull BlockState state, @Nullable LivingEntity placer,
+                                @Nonnull ItemStack stack) {
+        showVisualization(world, pos);
         if (world.isRemote) {
             return;
         }
@@ -123,7 +128,8 @@ public class MiniLoaderBlock extends Block implements IWaterLoggable {
     }
 
     @Override
-    public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
+    @SuppressWarnings("deprecation")
+    public void onReplaced(@Nonnull BlockState state, World world, @Nonnull BlockPos pos, @Nonnull BlockState newState, boolean isMoving) {
         if (world.isRemote) {
             return;
         }
@@ -135,7 +141,8 @@ public class MiniLoaderBlock extends Block implements IWaterLoggable {
     }
 
     @Override
-    public boolean isValidPosition(BlockState state, IWorldReader worldIn, BlockPos pos) {
+    @SuppressWarnings("deprecation")
+    public boolean isValidPosition(@Nonnull BlockState state, @Nonnull IWorldReader worldIn, BlockPos pos) {
         return Block.hasEnoughSolidSide(worldIn, pos.down(), Direction.UP);
     }
 
@@ -145,21 +152,16 @@ public class MiniLoaderBlock extends Block implements IWaterLoggable {
 
     /**
      * Toggles an in-world representation of which chunks are loaded
-     * 
-     * @param world  Block
-     * @param pos    Block
-     * @param player Player who activated block - CAN BE NULL - null player means no
-     *               chat notification
-     * @param show   Whether or not to show the visulaization
+     *
+     * @param world Block
+     * @param pos   Block
      */
     public void showVisualization(World world, BlockPos pos) {
         if (world.isRemote) {
-            List<BlockPos> chunkCenters = new ArrayList<BlockPos>();
+            List<BlockPos> chunkCenters = new ArrayList<>();
             List<ChunkPos> area = this.getLoadArea(pos);
 
-            area.forEach((chunkPos) -> {
-                chunkCenters.add(new BlockPos(((chunkPos.x << 4) + 8), pos.getY(), (chunkPos.z << 4) + 8));
-            });
+            area.forEach((chunkPos) -> chunkCenters.add(new BlockPos(((chunkPos.x << 4) + 8), pos.getY(), (chunkPos.z << 4) + 8)));
 
             for (BlockPos p : chunkCenters) {
                 for (int i = 0; p.up(i).getY() < p.getY() + ClientConfig.MAX_INDICATOR_HEIGHT.get(); i++) {

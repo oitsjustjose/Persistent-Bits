@@ -19,6 +19,4 @@ public interface IMiniLoaderList {
     void unload(BlockPos pos);
 
     boolean containsChunk(ChunkPos pos);
-
-    boolean contains(BlockPos pos);
 }

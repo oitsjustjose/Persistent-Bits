@@ -1,0 +1,24 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="runClient" type="Application" factoryName="Application" singleton="false">
+    <envs>
+      <env name="MOD_CLASSES" value="persistentbits%%$PROJECT_DIR$/build/resources/main:persistentbits%%$PROJECT_DIR$/build/classes/java/main" />
+      <env name="MCP_MAPPINGS" value="snapshot_20200319-1.15.1" />
+      <env name="MCP_VERSION" value="20200307.202953" />
+      <env name="FORGE_VERSION" value="31.1.25" />
+      <env name="assetIndex" value="1.15" />
+      <env name="assetDirectory" value="$USER_HOME$/.gradle/caches/forge_gradle/assets" />
+      <env name="nativesDirectory" value="$PROJECT_DIR$/build/natives" />
+      <env name="FORGE_GROUP" value="net.minecraftforge" />
+      <env name="target" value="fmluserdevclient" />
+      <env name="MC_VERSION" value="1.15.2" />
+    </envs>
+    <option name="MAIN_CLASS_NAME" value="net.minecraftforge.userdev.LaunchTesting" />
+    <module name="Persistent_Bits.main" />
+    <option name="VM_PARAMETERS" value="-Dforge.logging.console.level=debug -XstartOnFirstThread -Xss1M" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/run" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+      <option name="Gradle.BeforeRunTask" enabled="true" tasks=":prepareRunClient" externalProjectPath="$PROJECT_DIR$" />
+    </method>
+  </configuration>
+</component>

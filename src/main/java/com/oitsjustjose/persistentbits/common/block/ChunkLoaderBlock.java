@@ -1,21 +1,10 @@
 package com.oitsjustjose.persistentbits.common.block;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import com.oitsjustjose.persistentbits.PersistentBits;
 import com.oitsjustjose.persistentbits.common.utils.ClientConfig;
 import com.oitsjustjose.persistentbits.common.utils.CommonConfig;
 import com.oitsjustjose.persistentbits.common.utils.Constants;
-
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.IWaterLoggable;
-import net.minecraft.block.SoundType;
+import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.PushReaction;
 import net.minecraft.entity.LivingEntity;
@@ -42,6 +31,11 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ToolType;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
+
 public class ChunkLoaderBlock extends Block implements IWaterLoggable {
     public static final ResourceLocation REGISTRY_NAME = new ResourceLocation(Constants.MODID, "chunk_loader");
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
@@ -54,7 +48,9 @@ public class ChunkLoaderBlock extends Block implements IWaterLoggable {
     }
 
     @Override
-    public PushReaction getPushReaction(BlockState state) {
+    @Nonnull
+    @SuppressWarnings("deprecation")
+    public PushReaction getPushReaction(@Nonnull BlockState state) {
         return PushReaction.BLOCK;
     }
 
@@ -80,8 +76,8 @@ public class ChunkLoaderBlock extends Block implements IWaterLoggable {
 
     @Override
     @SuppressWarnings("deprecation")
-    public void neighborChanged(BlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos,
-            boolean isMoving) {
+    public void neighborChanged(@Nonnull BlockState state, @Nonnull World worldIn, @Nonnull BlockPos pos, @Nonnull Block blockIn, @Nonnull BlockPos fromPos,
+                                boolean isMoving) {
         super.neighborChanged(state, worldIn, pos, blockIn, fromPos, isMoving);
         // Update the water from flowing to still or vice-versa
         if (state.get(WATERLOGGED)) {
@@ -91,21 +87,24 @@ public class ChunkLoaderBlock extends Block implements IWaterLoggable {
 
     @Override
     @Nonnull
-    public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+    @SuppressWarnings("deprecation")
+    public VoxelShape getShape(@Nonnull BlockState state, @Nonnull IBlockReader worldIn, @Nonnull BlockPos pos, @Nonnull ISelectionContext context) {
         return VoxelShapes.create(0.0D, 0.0D, 0.0D, 1.0D, 0.5D, 1.0D);
     }
 
-    public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player,
-            Hand handIn, BlockRayTraceResult hit) {
+    @Nonnull
+    @SuppressWarnings("deprecation")
+    public ActionResultType onBlockActivated(@Nonnull BlockState state, @Nonnull World worldIn, @Nonnull BlockPos pos, PlayerEntity player,
+                                             @Nonnull Hand handIn, @Nonnull BlockRayTraceResult hit) {
         player.sendStatusMessage(new TranslationTextComponent("block.persistentbits.chunk_loader.showing.range"), true);
         showVisualization(worldIn, pos);
         return ActionResultType.SUCCESS;
     }
 
     @Override
-    public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer,
-            ItemStack stack) {
-        showVisualization(placer.getEntityWorld(), pos);
+    public void onBlockPlacedBy(@Nonnull World world, @Nonnull BlockPos pos, @Nonnull BlockState state, @Nullable LivingEntity placer,
+                                @Nonnull ItemStack stack) {
+        showVisualization(world, pos);
         if (world.isRemote) {
             return;
         }
@@ -117,7 +116,8 @@ public class ChunkLoaderBlock extends Block implements IWaterLoggable {
     }
 
     @Override
-    public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
+    @SuppressWarnings("deprecation")
+    public void onReplaced(@Nonnull BlockState state, World world, @Nonnull BlockPos pos, @Nonnull BlockState newState, boolean isMoving) {
         if (world.isRemote) {
             return;
         }
@@ -144,21 +144,16 @@ public class ChunkLoaderBlock extends Block implements IWaterLoggable {
 
     /**
      * Toggles an in-world representation of which chunks are loaded
-     * 
-     * @param world  Block
-     * @param pos    Block
-     * @param player Player who activated block - CAN BE NULL - null player means no
-     *               chat notification
-     * @param show   Whether or not to show the visulaization
+     *
+     * @param world Block
+     * @param pos   Block
      */
     public void showVisualization(World world, BlockPos pos) {
         if (world.isRemote) {
-            List<BlockPos> chunkCenters = new ArrayList<BlockPos>();
+            List<BlockPos> chunkCenters = new ArrayList<>();
             List<ChunkPos> area = this.getLoadArea(pos);
 
-            area.forEach((chunkPos) -> {
-                chunkCenters.add(new BlockPos(((chunkPos.x << 4) + 8), pos.getY(), (chunkPos.z << 4) + 8));
-            });
+            area.forEach((chunkPos) -> chunkCenters.add(new BlockPos(((chunkPos.x << 4) + 8), pos.getY(), (chunkPos.z << 4) + 8)));
 
             for (BlockPos p : chunkCenters) {
                 for (int i = 0; p.up(i).getY() < p.getY() + ClientConfig.MAX_INDICATOR_HEIGHT.get(); i++) {
