@@ -1,129 +1,133 @@
 package com.oitsjustjose.persistentbits.common.block;
 
+import com.mojang.math.Vector3f;
 import com.oitsjustjose.persistentbits.PersistentBits;
+import com.oitsjustjose.persistentbits.common.capability.ChunkLoaderList;
 import com.oitsjustjose.persistentbits.common.utils.ClientConfig;
 import com.oitsjustjose.persistentbits.common.utils.CommonConfig;
 import com.oitsjustjose.persistentbits.common.utils.Constants;
-import net.minecraft.block.*;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.material.PushReaction;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.fluid.IFluidState;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.item.ItemStack;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.state.BooleanProperty;
-import net.minecraft.state.StateContainer;
-import net.minecraft.state.properties.BlockStateProperties;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
-import net.minecraftforge.common.ToolType;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.DustParticleOptions;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.SimpleWaterloggedBlock;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.PushReaction;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ChunkLoaderBlock extends Block implements IWaterLoggable {
+public class ChunkLoaderBlock extends Block implements SimpleWaterloggedBlock {
     public static final ResourceLocation REGISTRY_NAME = new ResourceLocation(Constants.MODID, "chunk_loader");
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 
     public ChunkLoaderBlock() {
-        super(Properties.create(Material.ROCK).hardnessAndResistance(10F, 1000F).sound(SoundType.STONE)
-                .harvestTool(ToolType.PICKAXE).harvestLevel(2).notSolid());
+        super(Properties.of(Material.STONE)
+                .strength(50.0F, 1200.0F)
+                .requiresCorrectToolForDrops()
+                .sound(SoundType.STONE)
+                .dynamicShape()
+        );
         this.setRegistryName(REGISTRY_NAME);
-        this.setDefaultState(this.stateContainer.getBaseState().with(WATERLOGGED, Boolean.FALSE));
+        this.registerDefaultState(this.getStateDefinition().any().setValue(WATERLOGGED, Boolean.valueOf(false)));
     }
 
     @Override
     @Nonnull
     @SuppressWarnings("deprecation")
-    public PushReaction getPushReaction(@Nonnull BlockState state) {
-        return PushReaction.BLOCK;
+    public PushReaction getPistonPushReaction(BlockState s) {
+        return PushReaction.DESTROY;
     }
 
     @Override
-    public BlockState getStateForPlacement(BlockItemUseContext context) {
-        if (context.getWorld().getBlockState(context.getPos()).getBlock() == Blocks.WATER) {
-            return this.getDefaultState().with(WATERLOGGED, Boolean.TRUE);
+    public BlockState getStateForPlacement(BlockPlaceContext context) {
+        if (context.getLevel().getBlockState(context.getClickedPos()).getBlock() == Blocks.WATER) {
+            return this.defaultBlockState().setValue(WATERLOGGED, Boolean.TRUE);
         }
-        return this.getDefaultState();
+        return this.defaultBlockState();
     }
 
     @Override
-    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(WATERLOGGED);
     }
 
     @Override
-    @Nonnull
     @SuppressWarnings("deprecation")
-    public IFluidState getFluidState(BlockState state) {
-        return state.get(WATERLOGGED) ? Fluids.WATER.getStillFluidState(false) : super.getFluidState(state);
+    public FluidState getFluidState(BlockState state) {
+        return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
     }
 
     @Override
     @SuppressWarnings("deprecation")
-    public void neighborChanged(@Nonnull BlockState state, @Nonnull World worldIn, @Nonnull BlockPos pos, @Nonnull Block blockIn, @Nonnull BlockPos fromPos,
-                                boolean isMoving) {
+    public void neighborChanged(BlockState state, Level worldIn, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
         super.neighborChanged(state, worldIn, pos, blockIn, fromPos, isMoving);
         // Update the water from flowing to still or vice-versa
-        if (state.get(WATERLOGGED)) {
-            worldIn.getPendingFluidTicks().scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(worldIn));
+        if (state.getValue(WATERLOGGED)) {
+            worldIn.getLiquidTicks().scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(worldIn));
         }
     }
 
     @Override
     @Nonnull
     @SuppressWarnings("deprecation")
-    public VoxelShape getShape(@Nonnull BlockState state, @Nonnull IBlockReader worldIn, @Nonnull BlockPos pos, @Nonnull ISelectionContext context) {
-        return VoxelShapes.create(0.0D, 0.0D, 0.0D, 1.0D, 0.5D, 1.0D);
+    public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
+        return Shapes.create(0.0D, 0.0D, 0.0D, 1.0D, 0.5D, 1.0D);
     }
 
     @Nonnull
     @SuppressWarnings("deprecation")
-    public ActionResultType onBlockActivated(@Nonnull BlockState state, @Nonnull World worldIn, @Nonnull BlockPos pos, PlayerEntity player,
-                                             @Nonnull Hand handIn, @Nonnull BlockRayTraceResult hit) {
-        player.sendStatusMessage(new TranslationTextComponent("block.persistentbits.chunk_loader.showing.range"), true);
+    public InteractionResult use(BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit) {
+        player.displayClientMessage(new TranslatableComponent("block.persistentbits.chunk_loader.showing.range"), true);
         showVisualization(worldIn, pos);
-        return ActionResultType.SUCCESS;
+        return InteractionResult.SUCCESS;
     }
 
     @Override
-    public void onBlockPlacedBy(@Nonnull World world, @Nonnull BlockPos pos, @Nonnull BlockState state, @Nullable LivingEntity placer,
-                                @Nonnull ItemStack stack) {
-        showVisualization(world, pos);
-        if (world.isRemote) {
-            return;
-        }
-        world.getCapability(PersistentBits.CAPABILITY, null).ifPresent(cap -> cap.add(pos));
-        if (CommonConfig.ENABLE_LOGGING.get()) {
-            PersistentBits.getInstance().LOGGER.info("Chunk Loader placed in chunk [{}, {}]", pos.getX() >> 4,
-                    pos.getZ() >> 4);
-        }
-    }
-
-    @Override
-    @SuppressWarnings("deprecation")
-    public void onReplaced(@Nonnull BlockState state, World world, @Nonnull BlockPos pos, @Nonnull BlockState newState, boolean isMoving) {
-        if (world.isRemote) {
-            return;
-        }
-        world.getCapability(PersistentBits.CAPABILITY, null).ifPresent(cap -> cap.remove(pos));
+    public boolean removedByPlayer(BlockState state, Level world, BlockPos pos, Player player, boolean willHarvest, FluidState fluid) {
+        world.getCapability(ChunkLoaderList.CAPABILITY, null).ifPresent(cap -> cap.remove(pos));
         if (CommonConfig.ENABLE_LOGGING.get()) {
             PersistentBits.getInstance().LOGGER.info("Chunk Loader removed in chunk [{}, {}]", pos.getX() >> 4,
+                    pos.getZ() >> 4);
+        }
+
+        return super.removedByPlayer(state, world, pos, player, willHarvest, fluid);
+    }
+
+    @Override
+    public void setPlacedBy(Level world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
+        showVisualization(world, pos);
+        if (world.isClientSide()) {
+            return;
+        }
+        world.getCapability(ChunkLoaderList.CAPABILITY, null).ifPresent(cap -> cap.add(pos));
+        if (CommonConfig.ENABLE_LOGGING.get()) {
+            PersistentBits.getInstance().LOGGER.info("Chunk Loader placed in chunk [{}, {}]", pos.getX() >> 4,
                     pos.getZ() >> 4);
         }
     }
@@ -148,16 +152,18 @@ public class ChunkLoaderBlock extends Block implements IWaterLoggable {
      * @param world Block
      * @param pos   Block
      */
-    public void showVisualization(World world, BlockPos pos) {
-        if (world.isRemote) {
+    public void showVisualization(Level world, BlockPos pos) {
+        if (world.isClientSide()) {
             List<BlockPos> chunkCenters = new ArrayList<>();
             List<ChunkPos> area = this.getLoadArea(pos);
+
+            ParticleOptions particle = new DustParticleOptions(new Vector3f(43/255F, 166/255F, 139/255F), 1F);
 
             area.forEach((chunkPos) -> chunkCenters.add(new BlockPos(((chunkPos.x << 4) + 8), pos.getY(), (chunkPos.z << 4) + 8)));
 
             for (BlockPos p : chunkCenters) {
-                for (int i = 0; p.up(i).getY() < p.getY() + ClientConfig.MAX_INDICATOR_HEIGHT.get(); i++) {
-                    world.addParticle(ParticleTypes.END_ROD, true, p.up(i).getX(), p.up(i).getY(), p.up(i).getZ(), 0, 0,
+                for (int i = 0; p.above(i).getY() < p.getY() + ClientConfig.MAX_INDICATOR_HEIGHT.get(); i++) {
+                    world.addParticle(particle, true, p.above(i).getX(), p.above(i).getY(), p.above(i).getZ(), 0, 0,
                             0);
                 }
             }

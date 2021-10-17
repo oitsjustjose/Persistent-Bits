@@ -6,8 +6,9 @@
 
 package com.oitsjustjose.persistentbits.common.capability;
 
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.ChunkPos;
 
 public interface IChunkLoaderList {
     void add(BlockPos pos);
@@ -19,4 +20,8 @@ public interface IChunkLoaderList {
     void unload(BlockPos pos);
 
     boolean containsChunk(ChunkPos pos);
+
+    public CompoundTag serializeNBT();
+
+    public void deserializeNBT(CompoundTag nbt);
 }

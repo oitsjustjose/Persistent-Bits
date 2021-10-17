@@ -1,3 +1,4 @@
+// TODO: Re-enable CurseGradle when it supports new ForgeGradle
 buildscript {
     repositories {
         maven { url = 'https://files.minecraftforge.net/maven' }
@@ -6,7 +7,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
     }
     dependencies {
         classpath "gradle.plugin.com.matthewprenger:CurseGradle:1.4.0"
@@ -14,26 +15,23 @@ buildscript {
 }
 apply plugin: 'net.minecraftforge.gradle'
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
-
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 apply plugin: 'com.matthewprenger.cursegradle'
 
+
+version = '1.0'
 group = 'com.oitsjustjose.persistentbits' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "PersistentBits-${game_version}"
 
-sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
-
+java.toolchain.languageVersion = JavaLanguageVersion.of(16)
+println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 minecraft {
-    mappings channel: "snapshot", version: "${mappings_version}-1.15.1"
+    mappings channel: 'official', version: '1.17.1'
     runs {
         client {
             workingDirectory project.file('run')
 
-            // Recommended logging data for a userdev environment
-//            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-
-            // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
 
             mods {
@@ -46,10 +44,6 @@ minecraft {
         server {
             workingDirectory project.file('run')
 
-            // Recommended logging data for a userdev environment
-//            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-
-            // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
 
             mods {
@@ -62,7 +56,7 @@ minecraft {
 }
 
 dependencies {
-    minecraft "net.minecraftforge:forge:${game_version}-${forge_version}"
+    minecraft 'net.minecraftforge:forge:1.17.1-37.0.85'
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..
@@ -80,6 +74,11 @@ jar {
     }
 }
 
+
+// Example configuration to allow publishing using the maven-publish task
+// we define a custom artifact that is sourced from the reobfJar output task
+// and then declare that to be published
+// Note you'll need to add a repository here
 def reobfFile = file("$buildDir/reobfJar/output.jar")
 def reobfArtifact = artifacts.add('default', reobfFile) {
     type 'jar'
@@ -92,32 +91,22 @@ task deobfJar(type: Jar) {
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
-    from sourceSets.main.allSource
     classifier = 'Sources'
+    from sourceSets.main.allSource
 }
-
-processResources {
-    version = "${mod_version}"
-    from(sourceSets.main.resources) {
-        include '**/mods.toml'
-        expand 'version': version
-    }
-}
-
-build.dependsOn processResources
 
 artifacts {
     archives deobfJar
     archives sourcesJar
 }
 
-curseforge {
+ curseforge {
   apiKey = project.hasProperty("CURSEFORGE_API_KEY") ? project.CURSEFORGE_API_KEY : ""
   project {
     id = '245681'
     changelogType = 'markdown'
     changelog = file("./changelog.md")
-    releaseType = 'release'
+    releaseType = 'beta'
     addGameVersion "${game_version}"
 
     mainArtifact(jar) {

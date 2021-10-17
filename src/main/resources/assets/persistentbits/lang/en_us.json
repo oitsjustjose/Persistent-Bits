@@ -1,5 +1,4 @@
 {
-    "block.persistentbits.chunk_loader": "§6Chunk Loader",
-    "block.persistentbits.mini_loader": "§eMini Loader",
-    "block.persistentbits.chunk_loader.showing.range": "§3Showing Chunk Range for 5s"
+  "block.persistentbits.chunk_loader": "§6Chunk Loader",
+  "block.persistentbits.chunk_loader.showing.range": "§3Showing Chunk Range for 5s"
 }
