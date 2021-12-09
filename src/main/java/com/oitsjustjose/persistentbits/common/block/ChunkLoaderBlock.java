@@ -1,15 +1,20 @@
 package com.oitsjustjose.persistentbits.common.block;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.Nonnull;
+
 import com.mojang.math.Vector3f;
 import com.oitsjustjose.persistentbits.PersistentBits;
 import com.oitsjustjose.persistentbits.common.capability.ChunkLoaderList;
 import com.oitsjustjose.persistentbits.common.utils.ClientConfig;
 import com.oitsjustjose.persistentbits.common.utils.CommonConfig;
 import com.oitsjustjose.persistentbits.common.utils.Constants;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleOptions;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
@@ -38,10 +43,6 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.List;
-
 public class ChunkLoaderBlock extends Block implements SimpleWaterloggedBlock {
     public static final ResourceLocation REGISTRY_NAME = new ResourceLocation(Constants.MODID, "chunk_loader");
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
@@ -51,15 +52,13 @@ public class ChunkLoaderBlock extends Block implements SimpleWaterloggedBlock {
                 .strength(50.0F, 1200.0F)
                 .requiresCorrectToolForDrops()
                 .sound(SoundType.STONE)
-                .dynamicShape()
-        );
+                .dynamicShape());
         this.setRegistryName(REGISTRY_NAME);
         this.registerDefaultState(this.getStateDefinition().any().setValue(WATERLOGGED, Boolean.valueOf(false)));
     }
 
     @Override
     @Nonnull
-    @SuppressWarnings("deprecation")
     public PushReaction getPistonPushReaction(BlockState s) {
         return PushReaction.DESTROY;
     }
@@ -85,38 +84,39 @@ public class ChunkLoaderBlock extends Block implements SimpleWaterloggedBlock {
 
     @Override
     @SuppressWarnings("deprecation")
-    public void neighborChanged(BlockState state, Level worldIn, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
+    public void neighborChanged(BlockState state, Level worldIn, BlockPos pos, Block blockIn, BlockPos fromPos,
+            boolean isMoving) {
         super.neighborChanged(state, worldIn, pos, blockIn, fromPos, isMoving);
         // Update the water from flowing to still or vice-versa
         if (state.getValue(WATERLOGGED)) {
-            worldIn.getLiquidTicks().scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(worldIn));
+            worldIn.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(worldIn));
         }
     }
 
     @Override
     @Nonnull
-    @SuppressWarnings("deprecation")
     public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
         return Shapes.create(0.0D, 0.0D, 0.0D, 1.0D, 0.5D, 1.0D);
     }
 
     @Nonnull
-    @SuppressWarnings("deprecation")
-    public InteractionResult use(BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit) {
+    public InteractionResult use(BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand handIn,
+            BlockHitResult hit) {
         player.displayClientMessage(new TranslatableComponent("block.persistentbits.chunk_loader.showing.range"), true);
         showVisualization(worldIn, pos);
         return InteractionResult.SUCCESS;
     }
 
     @Override
-    public boolean removedByPlayer(BlockState state, Level world, BlockPos pos, Player player, boolean willHarvest, FluidState fluid) {
+    public boolean onDestroyedByPlayer(BlockState state, Level world, BlockPos pos, Player player, boolean willHarvest,
+            FluidState fluid) {
         world.getCapability(ChunkLoaderList.CAPABILITY, null).ifPresent(cap -> cap.remove(pos));
         if (CommonConfig.ENABLE_LOGGING.get()) {
             PersistentBits.getInstance().LOGGER.info("Chunk Loader removed in chunk [{}, {}]", pos.getX() >> 4,
                     pos.getZ() >> 4);
         }
 
-        return super.removedByPlayer(state, world, pos, player, willHarvest, fluid);
+        return super.onDestroyedByPlayer(state, world, pos, player, willHarvest, fluid);
     }
 
     @Override
@@ -157,9 +157,10 @@ public class ChunkLoaderBlock extends Block implements SimpleWaterloggedBlock {
             List<BlockPos> chunkCenters = new ArrayList<>();
             List<ChunkPos> area = this.getLoadArea(pos);
 
-            ParticleOptions particle = new DustParticleOptions(new Vector3f(43/255F, 166/255F, 139/255F), 1F);
+            ParticleOptions particle = new DustParticleOptions(new Vector3f(43 / 255F, 166 / 255F, 139 / 255F), 1F);
 
-            area.forEach((chunkPos) -> chunkCenters.add(new BlockPos(((chunkPos.x << 4) + 8), pos.getY(), (chunkPos.z << 4) + 8)));
+            area.forEach((chunkPos) -> chunkCenters
+                    .add(new BlockPos(((chunkPos.x << 4) + 8), pos.getY(), (chunkPos.z << 4) + 8)));
 
             for (BlockPos p : chunkCenters) {
                 for (int i = 0; p.above(i).getY() < p.getY() + ClientConfig.MAX_INDICATOR_HEIGHT.get(); i++) {
