@@ -30,6 +30,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SimpleWaterloggedBlock;
 import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -44,7 +45,6 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class ChunkLoaderBlock extends Block implements SimpleWaterloggedBlock {
-    public static final ResourceLocation REGISTRY_NAME = new ResourceLocation(Constants.MODID, "chunk_loader");
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 
     public ChunkLoaderBlock() {
@@ -53,7 +53,6 @@ public class ChunkLoaderBlock extends Block implements SimpleWaterloggedBlock {
                 .requiresCorrectToolForDrops()
                 .sound(SoundType.STONE)
                 .dynamicShape());
-        this.setRegistryName(REGISTRY_NAME);
         this.registerDefaultState(this.getStateDefinition().any().setValue(WATERLOGGED, Boolean.valueOf(false)));
     }
 

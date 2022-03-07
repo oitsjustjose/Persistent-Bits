@@ -6,8 +6,13 @@ import com.oitsjustjose.persistentbits.common.capability.IChunkLoaderList;
 import com.oitsjustjose.persistentbits.common.utils.ClientConfig;
 import com.oitsjustjose.persistentbits.common.utils.CommonConfig;
 import com.oitsjustjose.persistentbits.common.utils.Constants;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
@@ -16,6 +21,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.common.util.LazyOptional;
@@ -28,21 +34,20 @@ import net.minecraftforge.fml.config.ModConfig.Type;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLPaths;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import net.minecraftforge.registries.ForgeRegistries;
 
 @Mod(Constants.MODID)
 public class PersistentBits {
     private static PersistentBits instance;
     public Logger LOGGER = LogManager.getLogger();
 
-    public final ChunkLoaderBlock CHUNKLOADER = new ChunkLoaderBlock();
+    public Block chunkLoader;
 
     public PersistentBits() {
         instance = this;
 
         // Register the setup method for modloading
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
+        // FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
         MinecraftForge.EVENT_BUS.register(this);
 
         this.configSetup();
@@ -59,24 +64,26 @@ public class PersistentBits {
                 FMLPaths.CONFIGDIR.get().resolve("persistentbits-common.toml"));
     }
 
-    public void setup(final FMLCommonSetupEvent event) {
-//        CapabilityManager.INSTANCE.register(IChunkLoaderList.class, new ChunkLoaderList.Storage(),
-//                () -> new ChunkLoaderList(null));
-    }
+    // public void setup(final FMLCommonSetupEvent event) {
+    // }
 
     @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
     public static class RegistryEvents {
         @SubscribeEvent
         public static void onBlocksRegistry(final RegistryEvent.Register<Block> blockRegistryEvent) {
-            blockRegistryEvent.getRegistry().register(PersistentBits.getInstance().CHUNKLOADER);
+            PersistentBits.getInstance().chunkLoader = new ChunkLoaderBlock()
+                    .setRegistryName(new ResourceLocation(Constants.MODID, "chunk_loader"));
+            blockRegistryEvent.getRegistry().register(PersistentBits.getInstance().chunkLoader);
         }
 
         @SubscribeEvent
         public static void onItemsRegistry(final RegistryEvent.Register<Item> itemRegistryEvent) {
-            BlockItem loaderAsItem = new BlockItem(PersistentBits.getInstance().CHUNKLOADER,
-                    new Item.Properties().tab(CreativeModeTab.TAB_DECORATIONS));
-            loaderAsItem.setRegistryName(ChunkLoaderBlock.REGISTRY_NAME);
-            itemRegistryEvent.getRegistry().register(loaderAsItem);
+            ForgeRegistries.BLOCKS.getValues().parallelStream()
+                    .filter(x -> x.getRegistryName().getNamespace().equals(Constants.MODID)).forEach(x -> {
+                        itemRegistryEvent.getRegistry()
+                                .register(new BlockItem(x, new Item.Properties().tab(CreativeModeTab.TAB_REDSTONE))
+                                        .setRegistryName(x.getRegistryName()));
+                    });
         }
     }
 
@@ -114,11 +121,11 @@ public class PersistentBits {
                     cap.deserializeNBT(nbt);
                 }
             };
-            event.addCapability(ChunkLoaderBlock.REGISTRY_NAME, provider);
+            event.addCapability(this.chunkLoader.getRegistryName(), provider);
             event.addListener(() -> inst.invalidate());
         } catch (Exception e) {
             PersistentBits.getInstance().LOGGER.error("PersistentBits has faced a fatal error. The game will crash...");
-            // PersistentBits.getInstance().LOGGER.error(e.getMessage());
+            PersistentBits.getInstance().LOGGER.error(e.getMessage());
             throw new RuntimeException(e);
         }
     }
