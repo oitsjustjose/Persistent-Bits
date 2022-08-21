@@ -1,22 +1,17 @@
 package com.oitsjustjose.persistentbits.common.block;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.Nonnull;
-
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.math.Vector3f;
 import com.oitsjustjose.persistentbits.PersistentBits;
 import com.oitsjustjose.persistentbits.common.capability.ChunkLoaderList;
 import com.oitsjustjose.persistentbits.common.utils.ClientConfig;
 import com.oitsjustjose.persistentbits.common.utils.CommonConfig;
-import com.oitsjustjose.persistentbits.common.utils.Constants;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleOptions;
-import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
@@ -30,7 +25,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SimpleWaterloggedBlock;
 import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -43,6 +37,11 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ChunkLoaderBlock extends Block implements SimpleWaterloggedBlock {
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
@@ -53,12 +52,12 @@ public class ChunkLoaderBlock extends Block implements SimpleWaterloggedBlock {
                 .requiresCorrectToolForDrops()
                 .sound(SoundType.STONE)
                 .dynamicShape());
-        this.registerDefaultState(this.getStateDefinition().any().setValue(WATERLOGGED, Boolean.valueOf(false)));
+        this.registerDefaultState(this.getStateDefinition().any().setValue(WATERLOGGED, Boolean.FALSE));
     }
 
     @Override
     @Nonnull
-    public PushReaction getPistonPushReaction(BlockState s) {
+    public PushReaction getPistonPushReaction(@NotNull BlockState s) {
         return PushReaction.DESTROY;
     }
 
@@ -76,15 +75,13 @@ public class ChunkLoaderBlock extends Block implements SimpleWaterloggedBlock {
     }
 
     @Override
-    @SuppressWarnings("deprecation")
-    public FluidState getFluidState(BlockState state) {
+    public @NotNull FluidState getFluidState(BlockState state) {
         return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
     }
 
     @Override
     @SuppressWarnings("deprecation")
-    public void neighborChanged(BlockState state, Level worldIn, BlockPos pos, Block blockIn, BlockPos fromPos,
-            boolean isMoving) {
+    public void neighborChanged(@NotNull BlockState state, @NotNull Level worldIn, @NotNull BlockPos pos, @NotNull Block blockIn, @NotNull BlockPos fromPos, boolean isMoving) {
         super.neighborChanged(state, worldIn, pos, blockIn, fromPos, isMoving);
         // Update the water from flowing to still or vice-versa
         if (state.getValue(WATERLOGGED)) {
@@ -94,21 +91,27 @@ public class ChunkLoaderBlock extends Block implements SimpleWaterloggedBlock {
 
     @Override
     @Nonnull
-    public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
+    public VoxelShape getShape(@NotNull BlockState state, @NotNull BlockGetter worldIn, @NotNull BlockPos pos, @NotNull CollisionContext context) {
         return Shapes.create(0.0D, 0.0D, 0.0D, 1.0D, 0.5D, 1.0D);
     }
 
     @Nonnull
-    public InteractionResult use(BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand handIn,
-            BlockHitResult hit) {
-        player.displayClientMessage(new TranslatableComponent("block.persistentbits.chunk_loader.showing.range"), true);
+    public InteractionResult use(@NotNull BlockState state, @NotNull Level worldIn, @NotNull BlockPos pos, @NotNull Player player, @NotNull InteractionHand handIn, @NotNull BlockHitResult hit) {
+        TranslatableContents cont = new TranslatableContents("block.persistentbits.chunk_loader.showing.range");
+        MutableComponent comp;
+        try {
+            comp = cont.resolve(null, null, 0);
+        } catch (CommandSyntaxException ex) {
+            comp = Component.empty().append("FAILED TO TRANSLATE block.persistentbits.chunk_loader.showing.range");
+        }
+
+        player.displayClientMessage(comp, true);
         showVisualization(worldIn, pos);
         return InteractionResult.SUCCESS;
     }
 
     @Override
-    public boolean onDestroyedByPlayer(BlockState state, Level world, BlockPos pos, Player player, boolean willHarvest,
-            FluidState fluid) {
+    public boolean onDestroyedByPlayer(BlockState state, Level world, BlockPos pos, Player player, boolean willHarvest, FluidState fluid) {
         world.getCapability(ChunkLoaderList.CAPABILITY, null).ifPresent(cap -> cap.remove(pos));
         if (CommonConfig.ENABLE_LOGGING.get()) {
             PersistentBits.getInstance().LOGGER.info("Chunk Loader removed in chunk [{}, {}]", pos.getX() >> 4,
@@ -119,7 +122,7 @@ public class ChunkLoaderBlock extends Block implements SimpleWaterloggedBlock {
     }
 
     @Override
-    public void setPlacedBy(Level world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
+    public void setPlacedBy(@NotNull Level world, @NotNull BlockPos pos, @NotNull BlockState state, LivingEntity placer, @NotNull ItemStack stack) {
         showVisualization(world, pos);
         if (world.isClientSide()) {
             return;

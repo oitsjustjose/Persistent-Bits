@@ -1,10 +1,5 @@
-# Persistent Bits Changelog (1.18)
+# Persistent Bits Changelog (1.19)
 
 ## 2.0.4
 
-- 1.18.2 Port
-
-## 2.0.3
-
-- Updated to 1.18 :)
-- Mini Loader is gone because it caused hangs on world load.
+- Initial Port
