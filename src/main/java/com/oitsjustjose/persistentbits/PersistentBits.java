@@ -31,13 +31,14 @@ import org.jetbrains.annotations.NotNull;
 public class PersistentBits {
     private static PersistentBits instance;
     public Logger LOGGER = LogManager.getLogger();
-    public static PersistentBitsRegistry Registry = new PersistentBitsRegistry();
+    public static PersistentBitsRegistry REGISTRY;
 
     public PersistentBits() {
         instance = this;
+        REGISTRY = new PersistentBitsRegistry();
         MinecraftForge.EVENT_BUS.register(this);
-        Registry.ItemRegistry.register(FMLJavaModLoadingContext.get().getModEventBus());
-        Registry.BlockRegistry.register(FMLJavaModLoadingContext.get().getModEventBus());
+        REGISTRY.ItemRegistry.register(FMLJavaModLoadingContext.get().getModEventBus());
+        REGISTRY.BlockRegistry.register(FMLJavaModLoadingContext.get().getModEventBus());
         this.configSetup();
     }
 
@@ -95,7 +96,7 @@ public class PersistentBits {
                     }
                 }
             };
-            event.addCapability(ForgeRegistries.BLOCKS.getKey(Registry.chunkLoader), provider);
+            event.addCapability(REGISTRY.chunkLoader.getKey().location(), provider);
             event.addListener(inst::invalidate);
         } catch (Exception e) {
             PersistentBits.getInstance().LOGGER.error("PersistentBits has faced a fatal error. The game will crash...");

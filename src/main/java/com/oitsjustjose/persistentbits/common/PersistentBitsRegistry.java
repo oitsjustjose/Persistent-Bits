@@ -9,19 +9,18 @@ import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 
 public class PersistentBitsRegistry {
     public final DeferredRegister<Item> ItemRegistry = DeferredRegister.create(ForgeRegistries.ITEMS, Constants.MODID);
 
     public final DeferredRegister<Block> BlockRegistry = DeferredRegister.create(ForgeRegistries.BLOCKS, Constants.MODID);
 
-    public final ChunkLoaderBlock chunkLoader;
+    public final RegistryObject<ChunkLoaderBlock> chunkLoader;
 
     public PersistentBitsRegistry() {
-        this.chunkLoader = new ChunkLoaderBlock();
-
         Item.Properties props = new Item.Properties().tab(CreativeModeTab.TAB_REDSTONE).rarity(Rarity.EPIC);
-        this.ItemRegistry.register("chunk_loader", () -> new BlockItem(chunkLoader, props));
-        this.BlockRegistry.register("chunk_loader", () -> this.chunkLoader);
+        this.chunkLoader = this.BlockRegistry.register("chunk_loader", ChunkLoaderBlock::new);
+        this.ItemRegistry.register("chunk_loader", () -> new BlockItem(chunkLoader.get(), props));
     }
 }
